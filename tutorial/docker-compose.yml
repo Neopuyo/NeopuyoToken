@@ -1,0 +1,31 @@
+version: "3.8"
+
+networks:
+  tokenizerNetwork:
+    name: tokenizerNetwork
+
+volumes:
+  tokenizerVolume:
+    driver: local
+    driver_opts:
+      device: .
+      o: bind
+      type: none
+
+services:
+  node:
+    build:
+      context: .
+      dockerfile: ./dockers/node/Dockerfile
+    container_name: node
+    # depends_on:
+    #   - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - tokenizerVolume:/home
+    # env_file:
+    #   - .env
+    networks:
+      - tokenizerNetwork
+    restart: always
