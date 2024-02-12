@@ -1,7 +1,7 @@
 COMPOSE_FILE := docker-compose.yml
 CMD := docker compose -f $(COMPOSE_FILE)
 
-.PHONY: help up down stop clean prune all logs
+.PHONY: help up down stop clean prune all logs ps
 
 all: up
 
@@ -17,6 +17,9 @@ logs: ## Show logs for all containers
 
 up: ## Start containers defined in docker-compose.yml
 	$(CMD) up -d --build
+
+ps: ## Show current active dockers
+	$(CMD) ps
 
 down: ## Stop and remove containers defined in docker-compose.yml
 	$(CMD) down

@@ -1,0 +1,31 @@
+version: "3.8"
+
+networks:
+  tutoNetwork:
+    name: tutoNetwork
+
+volumes:
+  dappVolume:
+    driver: local
+    driver_opts:
+      device: ./project/
+      o: bind
+      type: none
+
+services:
+  tuto:
+    build:
+      context: .
+      dockerfile: ./Dockerfile/Dockerfile
+    container_name: tuto
+    # depends_on:
+    #   - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./project/:/usr/src/app/
+    # env_file:
+    #   - .env
+    networks:
+      - tutoNetwork
+    restart: always

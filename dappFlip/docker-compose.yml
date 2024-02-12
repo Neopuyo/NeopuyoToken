@@ -1,31 +1,31 @@
 version: "3.8"
 
 networks:
-  tokenizerNetwork:
-    name: tokenizerNetwork
+  flipNetwork:
+    name: flipNetwork
 
 volumes:
-  tokenizerVolume:
+  dappVolume:
     driver: local
     driver_opts:
-      device: .
+      device: ./project/
       o: bind
       type: none
 
 services:
-  node:
+  flip:
     build:
       context: .
-      dockerfile: ./dockers/node/Dockerfile
-    container_name: node
+      dockerfile: ./Dockerfile/Dockerfile
+    container_name: flip
     # depends_on:
     #   - backend
     ports:
       - "3000:3000"
     volumes:
-      - tokenizerVolume:/home
+      - ./project/:/usr/src/app/
     # env_file:
     #   - .env
     networks:
-      - tokenizerNetwork
+      - flipNetwork
     restart: always
