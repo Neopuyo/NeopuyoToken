@@ -21,6 +21,9 @@ up: ## Start containers defined in docker-compose.yml
 ps: ## Show current active dockers
 	$(CMD) ps
 
+flip: ## Exec bash into the container named "flip"
+	docker exec -it flip bash 
+
 down: ## Stop and remove containers defined in docker-compose.yml
 	$(CMD) down
 

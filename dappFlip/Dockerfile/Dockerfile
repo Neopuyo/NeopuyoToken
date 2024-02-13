@@ -9,15 +9,29 @@ WORKDIR /usr/src/app
 # COPY ./dockers/node/tools/nodelauncher.sh ./
 COPY ./project/package*.json ./
 
-# Installer les dépendances du projet
-# RUN npm install
-
 # Copier le reste du code source de l'application
 COPY ./project/ .
 
-# Exposer le port 3000
+
+# Installer les dépendances du projet
+# Can't using only `npm install` BROKEN TIMEOUT 
+RUN npm install -g truffle
+RUN npm install -g ganache
+RUN npm install @metamask/detect-provider@^1.2.0
+RUN npm install @rails/webpacker@^5.4.3
+RUN npm install @truffle/hdwallet-provider@^2.0.9
+RUN npm install dotenv@^16.0.1
+RUN npm install express@^4.18.1
+RUN npm install node_modules-path@^2.0.5
+RUN npm install truffle-hdwallet-provider@^1.0.17
+RUN npm install webpack@4
+RUN npm install webpack-cli@^4.10.0
+# RUN npm install
+
+
+# open port
 EXPOSE 3000
 
 # Commande par défaut pour démarrer l'application
-CMD ["tail", "-f", "/dev/null"]
-#CMD ["npm", "start"]
+# CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "start"]

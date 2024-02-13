@@ -6,7 +6,7 @@ a Web3 BNB Chain related exercise
 🔻 **Web3**  
 The web 3.0 is the concept of the next generation of the web, in which most users will be connected via a **decentralized network** and have access to their own data.
 
-🔻 **Dapps**
+🔻 **Dapps**  
 Stands for **Decentralized** applications, built on peer-to-peer blockchain networks, open-source code
 
 🔻 **Token** ~ *a unique digital asset*  
@@ -23,6 +23,17 @@ The whitepaper is a **key ressource** document. Destined to investors, developer
 🔻 **Smart contracts**  
 A **self-executing program** on a blockchain. Written in blockchain-specific programming languages, such as **Solidity** for **Ethereum**. They are designed to **automatically execute** transactions or actions **when predefined conditions are met** in a secure and transparent manner. 
 
+🔻 **[Ethereum](https://ethereum.org/fr/what-is-ethereum)**  
+
+- Ethereum is a decentralized **blockchain** platform that enables the execution of **smart contracts** and the deployment of **DApps**.  
+
+- Unlike **Bitcoin**, which is primarily designed to be a digital currency, Ethereum aims to provide a platform for the creation of autonomous contracts and decentralized applications through its own cryptocurrency called **Ether** (**ETH**).  
+
+- Its smart contracts, can be utilized in various areas such as decentralized finance (**DeFi**), gaming, digital identities, voting systems.  
+
+- Launched in 2015, it has become one of the most popular and widely used blockchain platforms.
+
+🔻 **[ERC-20](https://academy.binance.com/en/articles/an-introduction-to-erc-20-tokens) & [BEP-20](https://academy.binance.com/en/glossary/bep-20) Tokens**
 <br/>
 
 ## **Token creation**
@@ -109,13 +120,29 @@ C'est plutôt lié à la section IDE ci-dessous ?
 **Cloud-based** | Not installed on developper's machine, used from a browser
 **Coding plateform** |  supports **Solidity** programming language and Web3 things 
 
+## BlockChain Related pluggins, frameworks and tools
 
+<br/>
+
+🔻 **Metamask** *Web browser extension & mobile app*
+
+Access decentralized applications *`DApps`* on the **Ethereum** blockchain on browser (*Chrome often*).Users can manage their Ethereum accounts, send and receive Ether, as well as interact with **smart contracts** and **Dapps** directly from their browser. An easy access to the Ethereum ecosystem.  
+
+- using a **secrete recovery phrase** to login aka **seed phrase** (12-24 words)
+- Can connect to blockchains **networks**, started **Ethereum**, added then switched to **BNB chain**
+- **BNB Smart Chain Testnet network**.  
+Play around with fake money and get familiar with the wallet.
+
+<br/>
 
 ## **How to Tokenizer ?**
 
 1. Read provided links and documentation, note keyword and their meaning in this README.md
 2. Lets try to code something, using this BNB Chain tutorial  
 [Develop Full Stack dApp on BNB Smart Chain in 5 minutes](https://docs.bnbchain.org/docs/dapp-dev/Hello-World/) "😮 5 minutes"
+   - including [Connecting MetaMask to BNB Smart Chain](https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain)
+
+
 
 
 
@@ -158,6 +185,12 @@ C'est plutôt lié à la section IDE ci-dessous ?
 
 
 ---
+JSON MEMO
+// "dotenv": "^16.4.2",
+// "ganache": "^7.9.2",
+// "truffle": "^5.11.5"
+
+---
 
 *Sources - Maybe usefull links*  
 - [Defining Blockchain & digital assets](https://www2.deloitte.com/us/en/pages/about-deloitte/solutions/blockchain-digital-assets-definition.html)  
@@ -165,9 +198,11 @@ C'est plutôt lié à la section IDE ci-dessous ?
 - [What is a Blockchain platform?](https://blogs.opentext.com/blockchain-platform/) *article from Mark Morley 02/2020*
 - [What is **ChainIDE** ? And how is it any different from other IDEs?](https://paschal.hashnode.dev/what-is-chainide-and-how-is-it-any-different-from-other-ides#heading-key-features-of-chainide)  
 
+
 *Documentations*
 - [Solidity](https://docs.soliditylang.org/en/v0.8.24/)
 - [BNB Chain](https://docs.bnbchain.org/docs/overview)
+- [Ethereum](https://ethereum.org/fr/what-is-ethereum)
 
 *Subject given links BNB Chain Documentation*  
 **Using ChainIDE** ~ [Using ChainIDE](https://docs.bnbchain.org/docs/chainide/)  
