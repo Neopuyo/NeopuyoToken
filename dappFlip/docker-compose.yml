@@ -16,7 +16,7 @@ services:
   flip:
     build:
       context: .
-      dockerfile: ./Dockerfile/Dockerfile
+      dockerfile: ./whaleSetup/Dockerfile
     container_name: flip
     # depends_on:
     #   - backend
