@@ -14,6 +14,11 @@ A digital representation of an **asset** that has been issued on an existing blo
 Not **mined**, the quantity is determined by the issuer  
 This **asset** doesn't necessarily have to be a unit of cryptocurrency; it could be a right to access a service, loyalty points, and so on  
 
+🔻 **Ticker**  
+A short combination of letters that is used to represent an asset.
+- ETH Ethereum
+- BTC Bitcoin
+
 🔻 **BlockChain**  
 enables **tokens** to be created, stored, transferred, and transacted in a real-time, immutable manneracross a decentralized peer-to-peer network. Anything of value can be tracked/traded virtually.
 
@@ -74,14 +79,6 @@ Component | Meaning
    [Block]-[Block]-[Block]  ...  <<  [NewBlock]
 // They represent a complete record of all transactions
 ```
-
-<br/>
-
-## **Blockchain Plateforms**
-
-Chacun lié à une blockchain ?  
-Est-ce que la Blockchain plateform du sujet c'est **BNB Chain** / **BNB Smart Chain** ? (BSC)  
-C'est plutôt lié à la section IDE ci-dessous ?
 
 <br/>
 
@@ -183,12 +180,6 @@ Play around with fake money and get familiar with the wallet.
 | **underlying**                       | sous-jacent                        |
 | **a stake in a company**             | une part dans une entreprise       |
 
-
----
-JSON MEMO
-// "dotenv": "^16.4.2",
-// "ganache": "^7.9.2",
-// "truffle": "^5.11.5"
 
 ---
 
