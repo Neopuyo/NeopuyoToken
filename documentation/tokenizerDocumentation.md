@@ -38,6 +38,8 @@ A **self-executing program** on a blockchain. Written in blockchain-specific pro
 
 - Launched in 2015, it has become one of the most popular and widely used blockchain platforms.
 
+- 1 ETH = 10^18 Wei, Wei is used as the smallest quantity of Ether to handle. 
+
 🔻 **[ERC-20](https://academy.binance.com/en/articles/an-introduction-to-erc-20-tokens) & [BEP-20](https://academy.binance.com/en/glossary/bep-20) Tokens**
 <br/>
 
@@ -138,7 +140,8 @@ Play around with fake money and get familiar with the wallet.
 2. Lets try to code something, using this BNB Chain tutorial  
 [Develop Full Stack dApp on BNB Smart Chain in 5 minutes](https://docs.bnbchain.org/docs/dapp-dev/Hello-World/) "😮 5 minutes"
    - including [Connecting MetaMask to BNB Smart Chain](https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain)
-3. [Issue BEP20 Tokens](https://docs.bnbchain.org/docs/issue-BEP20/) +  [Let’s create your own BEP20 Token on Binance Smart Chain(Step-by-Step by using BEP20-Token Template)](https://misterfocusth.medium.com/lets-create-your-own-bep20-token-on-binance-smart-chain-step-by-step-by-using-bep20-token-c41eacd1a5da) 
+3. [Issue BEP20 Tokens](https://docs.bnbchain.org/docs/issue-BEP20/) +  [Let’s create your own BEP20 Token on Binance Smart Chain(Step-by-Step by using BEP20-Token Template)](https://misterfocusth.medium.com/lets-create-your-own-bep20-token-on-binance-smart-chain-step-by-step-by-using-bep20-token-c41eacd1a5da)  
+4. [ce tuto va plus dans le code en detail](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
 
 
 
@@ -168,6 +171,12 @@ Play around with fake money and get familiar with the wallet.
 <br/>
 <br/>
 <br/>
+<br/>
+
+---
+---
+---
+
 <br/>
 
 ## **Vocabulary memo 🇫🇷**
@@ -180,9 +189,16 @@ Play around with fake money and get familiar with the wallet.
 | **ownership**                        | propriété                          |
 | **underlying**                       | sous-jacent                        |
 | **a stake in a company**             | une part dans une entreprise       |
+| **recipient**                        | destinataire                       |
 
 
 ---
+---
+---
+
+<br/>
+
+## **Sources**
 
 *Sources - Maybe usefull links*  
 - [Defining Blockchain & digital assets](https://www2.deloitte.com/us/en/pages/about-deloitte/solutions/blockchain-digital-assets-definition.html)  
@@ -192,18 +208,20 @@ Play around with fake money and get familiar with the wallet.
 - [Let’s create your own BEP20 Token on Binance Smart Chain(Step-by-Step by using BEP20-Token Template)](https://misterfocusth.medium.com/lets-create-your-own-bep20-token-on-binance-smart-chain-step-by-step-by-using-bep20-token-c41eacd1a5da) 
 
 *Kept things*  
-[How To Create and Mint a Token (ERC-20 Token) in JavaScript](https://betterprogramming.pub/how-to-create-and-mint-a-crypto-coin-erc-20-token-in-javascript-ef39ecc74e27)
+- [How To Create and Mint a Token (ERC-20 Token) in JavaScript](https://betterprogramming.pub/how-to-create-and-mint-a-crypto-coin-erc-20-token-in-javascript-ef39ecc74e27)  
+- [How to Create and Deploy an ERC20 Token – In 20 minutes](https://vitto.cc/how-to-create-and-deploy-an-erc20-token-in-20-minutes/)  
+- [How to create and deploy a BEP-20 token to the Binance smart chain](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
 
 
 
-*Documentations*
+***Official documentations***
 - [Solidity](https://docs.soliditylang.org/en/v0.8.24/)
 - [BNB Chain](https://docs.bnbchain.org/docs/overview)
 - [Ethereum](https://ethereum.org/fr/what-is-ethereum)
 
 *Subject given links BNB Chain Documentation*  
-**Using ChainIDE** ~ [Using ChainIDE](https://docs.bnbchain.org/docs/chainide/)  
-**Remix** ~ [Using Remix IDE for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/remix-new/)  
-**Truffle** [Using Truffle for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/truffle-new/)  
-**Hardhat** [Using Hardhat for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/hardhat-new/)  
-**Replit** [Using Replit IDE for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/replit/)
+- **Using ChainIDE** ~ [Using ChainIDE](https://docs.bnbchain.org/docs/chainide/)  
+- **Remix** ~ [Using Remix IDE for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/remix-new/)  
+- **Truffle** [Using Truffle for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/truffle-new/)  
+- **Hardhat** [Using Hardhat for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/hardhat-new/)  
+- **Replit** [Using Replit IDE for Deploying Smart Contracts on BSC](https://docs.bnbchain.org/docs/replit/)
