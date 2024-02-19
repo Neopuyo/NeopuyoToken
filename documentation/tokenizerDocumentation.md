@@ -1,32 +1,62 @@
 # Tokenizer
 a Web3 BNB Chain related exercise
 
-## **New things 📚**
+## **Meet New things 📚**
 
 🔻 **Web3**  
 The web 3.0 is the concept of the next generation of the web, in which most users will be connected via a **decentralized network** and have access to their own data.
 
-🔻 **Dapps**  
-Stands for **Decentralized** applications, built on peer-to-peer blockchain networks, open-source code
+<br/>
+
+🔻 **Dapps** & **DeFI**
+
+**DApp** stands for **Decentralized applications**, built on peer-to-peer blockchain networks, open-source code  
+**DeFI** stands for **Decentralized Finance**
+
+<br/>
+
+
+🔻 **Solidity**
+
+Solidity is the **programming language** most commonly used in blockchain and smart contracts. [📑](https://docs.soliditylang.org/en/v0.8.24/)
+
+<br/>
 
 🔻 **Token** ~ *a unique digital asset*  
 A digital representation of an **asset** that has been issued on an existing blockchain  
 Not **mined**, the quantity is determined by the issuer  
 This **asset** doesn't necessarily have to be a unit of cryptocurrency; it could be a right to access a service, loyalty points, and so on  
 
+<br/>
+
+
 🔻 **Ticker**  
 A short combination of letters that is used to represent an asset.
 - ETH Ethereum
 - BTC Bitcoin
 
+<br/>
+
+
 🔻 **BlockChain**  
 enables **tokens** to be created, stored, transferred, and transacted in a real-time, immutable manneracross a decentralized peer-to-peer network. Anything of value can be tracked/traded virtually.
+
+<br/>
+
 
 🔻 **Whitepaper**  
 The whitepaper is a **key ressource** document. Destined to investors, developers, researchers...  interested in understanding of a specific blockchain project. It Explain its workings, objectives, and underlying architecture, as well as to present potential use cases and benefits.
 
+<br/>
+
+
 🔻 **Smart contracts**  
+> Applications or programs that run on the blockchain
+
 A **self-executing program** on a blockchain. Written in blockchain-specific programming languages, such as **Solidity** for **Ethereum**. They are designed to **automatically execute** transactions or actions **when predefined conditions are met** in a secure and transparent manner. 
+
+<br/>
+
 
 🔻 **[Ethereum](https://ethereum.org/fr/what-is-ethereum)**  
 
@@ -40,7 +70,25 @@ A **self-executing program** on a blockchain. Written in blockchain-specific pro
 
 - 1 ETH = 10^18 Wei, Wei is used as the smallest quantity of Ether to handle. 
 
+<br/>
+
 🔻 **[ERC-20](https://academy.binance.com/en/articles/an-introduction-to-erc-20-tokens) & [BEP-20](https://academy.binance.com/en/glossary/bep-20) Tokens**
+
+BEP-20 Interface
+
+```Solidity
+function totalSupply() external view returns (uint256);
+function decimals() external view returns (uint8);
+function symbol() external view returns (string memory);
+function name() external view returns (string memory);
+function getOwner() external view returns (address);
+function balanceOf(address account) external view returns (uint256);
+function transfer(address recipient, uint256 amount) external returns (bool);
+function allowance(address _owner, address spender) external view returns (uint256);
+function approve(address spender, uint256 amount) external returns (bool);
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+```
+
 <br/>
 
 ## **Token creation**
@@ -142,7 +190,7 @@ Play around with fake money and get familiar with the wallet.
    - including [Connecting MetaMask to BNB Smart Chain](https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain)
 3. [Issue BEP20 Tokens](https://docs.bnbchain.org/docs/issue-BEP20/) +  [Let’s create your own BEP20 Token on Binance Smart Chain(Step-by-Step by using BEP20-Token Template)](https://misterfocusth.medium.com/lets-create-your-own-bep20-token-on-binance-smart-chain-step-by-step-by-using-bep20-token-c41eacd1a5da)  
 4. [ce tuto va plus dans le code en detail](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
-
+5. How deploy the token through something like a dApp ? following this one should be interesting : [Building a Decentralized Application with BEP-20 contract in Solidity](https://programmingpercy.tech/blog/building-a-decentralized-application-with-bep-20-contract-in-solidity/)
 
 
 
