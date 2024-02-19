@@ -1,0 +1,31 @@
+version: "3.8"
+
+networks:
+  projectNetwork:
+    name: projectNetwork
+
+volumes:
+  dappVolume:
+    driver: local
+    driver_opts:
+      device: ./project/
+      o: bind
+      type: none
+
+services:
+  project:
+    build:
+      context: .
+      dockerfile: ./whaleSetup/Dockerfile
+    container_name: ${NAME}
+    # depends_on:
+    #   - backend
+    ports:
+      - "3000:3000" # node ? a voir
+    volumes:
+      - ./project/:/usr/src/app/
+    # env_file:
+    #   - .env
+    networks:
+      - projectNetwork
+    restart: always

@@ -17,3 +17,5 @@ _name _symbol _decimals _totalSupply
 7. go to deploy tab and deploy the token with **injected metamask selected**
 8. check the transaction on [testnet.bscscan.com](https://testnet.bscscan.com/)
 9. import the Neopuyo42Token into your metamask wallet
+
+[`!`] run **ganache** in a terminal to test dapp

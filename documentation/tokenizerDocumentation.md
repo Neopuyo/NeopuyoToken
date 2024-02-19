@@ -152,6 +152,21 @@ Component | Meaning
 --- | ---
 **npm** | Need a node environment
 **Ethereum** | Ethereum development environment
+**What's for ?** | building/testing/developing smart contracts
+**Basics** | `truffle init` &emsp; `truffle compile` &emsp; `truffle migrate` <br/> `truffle console` &emsp; `truffle test` &emsp;
+
+**`Ganache`**| Framework linked to **Truffle**
+--- | ---
+**npm** | Need a node environment
+**Ethereum** | Ethereum development environment
+**What's for ?** | Simulate an Ethereum node locally for tests
+**Basics** | `ganache --port 7545` *default 8545*
+
+
+```bash
+npm install -g truffle  
+npm install -g ganache
+```
 
 <br/>
 
@@ -190,7 +205,9 @@ Play around with fake money and get familiar with the wallet.
    - including [Connecting MetaMask to BNB Smart Chain](https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain)
 3. [Issue BEP20 Tokens](https://docs.bnbchain.org/docs/issue-BEP20/) +  [Let’s create your own BEP20 Token on Binance Smart Chain(Step-by-Step by using BEP20-Token Template)](https://misterfocusth.medium.com/lets-create-your-own-bep20-token-on-binance-smart-chain-step-by-step-by-using-bep20-token-c41eacd1a5da)  
 4. [ce tuto va plus dans le code en detail](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
-5. How deploy the token through something like a dApp ? following this one should be interesting : [Building a Decentralized Application with BEP-20 contract in Solidity](https://programmingpercy.tech/blog/building-a-decentralized-application-with-bep-20-contract-in-solidity/)
+5. How deploy the token through something like a dApp ? following this **tutorial serie** should be interesting :  
+   - [Building a Decentralized Application with BEP-20 contract in Solidity](https://programmingpercy.tech/blog/building-a-decentralized-application-with-bep-20-contract-in-solidity/)
+   - [Creating a Inheritable Staking contract in Solidity](https://programmingpercy.tech/blog/creating-a-inheritable-staking-contract-in-solidity/)
 
 
 
@@ -259,6 +276,7 @@ Play around with fake money and get familiar with the wallet.
 - [How To Create and Mint a Token (ERC-20 Token) in JavaScript](https://betterprogramming.pub/how-to-create-and-mint-a-crypto-coin-erc-20-token-in-javascript-ef39ecc74e27)  
 - [How to Create and Deploy an ERC20 Token – In 20 minutes](https://vitto.cc/how-to-create-and-deploy-an-erc20-token-in-20-minutes/)  
 - [How to create and deploy a BEP-20 token to the Binance smart chain](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
+[A Guide to Running Ganache in a Browser](https://hackernoon.com/a-guide-to-running-ganache-in-a-browser)
 
 
 
