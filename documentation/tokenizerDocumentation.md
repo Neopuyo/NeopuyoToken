@@ -91,6 +91,12 @@ function transferFrom(address sender, address recipient, uint256 amount) externa
 
 <br/>
 
+🔻 **Stacking**  
+
+To **stake** tokens means locking up coins to maintain the security of a blockchain network and earning rewards in return when selected as validators.  *Binance & Ethereum : Proof-of-stake (PoS) consensus mechanism*
+
+<br/>
+
 ## **Token creation**
 
 > Creating and deploying **digital assets** in a **blockchain network**  
@@ -153,7 +159,7 @@ Component | Meaning
 **npm** | Need a node environment
 **Ethereum** | Ethereum development environment
 **What's for ?** | building/testing/developing smart contracts
-**Basics** | `truffle init` &emsp; `truffle compile` &emsp; `truffle migrate` <br/> `truffle console` &emsp; `truffle test` &emsp;
+**Basics** | `truffle init` &emsp; `truffle compile` <br/> `truffle console` &emsp; `truffle test` &emsp; <br/>  `truffle migrate --reset --network bscTestnet`
 
 **`Ganache`**| Framework linked to **Truffle**
 --- | ---
@@ -208,7 +214,7 @@ Play around with fake money and get familiar with the wallet.
 5. How deploy the token through something like a dApp ? following this **tutorial serie** should be interesting :  
    - [Building a Decentralized Application with BEP-20 contract in Solidity](https://programmingpercy.tech/blog/building-a-decentralized-application-with-bep-20-contract-in-solidity/)
    - [Creating a Inheritable Staking contract in Solidity](https://programmingpercy.tech/blog/creating-a-inheritable-staking-contract-in-solidity/)
-
+   - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)
 
 
 
@@ -255,6 +261,7 @@ Play around with fake money and get familiar with the wallet.
 | **underlying**                       | sous-jacent                        |
 | **a stake in a company**             | une part dans une entreprise       |
 | **recipient**                        | destinataire                       |
+| **stake**                            | un enjeu / mettre en jeu           |
 
 
 ---
@@ -277,8 +284,11 @@ Play around with fake money and get familiar with the wallet.
 - [How to Create and Deploy an ERC20 Token – In 20 minutes](https://vitto.cc/how-to-create-and-deploy-an-erc20-token-in-20-minutes/)  
 - [How to create and deploy a BEP-20 token to the Binance smart chain](https://blog.logrocket.com/how-to-create-deploy-bep-20-token-binance-smart-chain/)
 [A Guide to Running Ganache in a Browser](https://hackernoon.com/a-guide-to-running-ganache-in-a-browser)
+- [A puzzle game set in blockChain](https://github.com/upstateinteractive/blockchain-puzzle)
 
-
+*Knowledge*
+- [mapping in solidity](https://medium.com/upstate-interactive/mappings-in-solidity-explained-in-under-two-minutes-ecba88aff96e)
+- [Time Travelling Truffle Tests](https://medium.com/edgefund/time-travelling-truffle-tests-f581c1964687) custom time for ganache/truffle test
 
 ***Official documentations***
 - [Solidity](https://docs.soliditylang.org/en/v0.8.24/)

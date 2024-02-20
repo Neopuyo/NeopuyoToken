@@ -2,8 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./Ownable.sol";
+import "./Stakeable.sol";
 
-contract FiveToken is Ownable {
+contract FiveToken is Ownable, Stakeable {
     uint256 private _totalSupply;
     uint8 private _decimals;
     string private _symbol;
@@ -126,9 +127,22 @@ contract FiveToken is Ownable {
         return true;
     }
 
+    function withdrawStake(uint256 amount, uint256 stake_index)  public {
+
+      uint256 amount_to_mint = _withdrawStake(amount, stake_index);
+      _mint(msg.sender, amount_to_mint);
+    }
+
     function transfer(address recipient, uint256 amount) external returns (bool) {
         _transfer(msg.sender, recipient, amount);
         return true;
+    }
+
+    function stake(uint256 amount) public {
+        require(amount <= _balances[msg.sender], "FiveToken: Cannot stake more than you own");
+
+        _stake(amount);
+        _burn(msg.sender, amount);
     }
 
     function transferFrom(address spender, address recipient, uint256 amount) external returns(bool){
