@@ -31,13 +31,17 @@ logs: ## Show logs for all containers
 
 up: ## Start containers defined in docker-compose.yml
 	@echo "$(GREEN)Starting container : $(CYAN)$(NAME)$(END)"
+	@echo "$(GREEN)Starting container : $(CYAN)$(NAME)-frontend$(END)"
 	$(CMD) up -d --build
 
 ps: ## Show current active dockers
 	$(CMD) ps
 
-exec: ## Exec bash into the container named "flip"
-	docker exec -it $(NAME) bash 
+exec: ## Exec bash into the main container
+	docker exec -it $(NAME) bash
+
+execf: ## Exec bash into the froontend container
+	docker exec -it $(NAME)-frontend bash 
 
 down: ## Stop and remove containers defined in docker-compose.yml
 	$(CMD) down

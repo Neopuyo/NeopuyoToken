@@ -49,6 +49,8 @@ Network URL: | https://data-seed-prebsc-1-s1binance.org:8545/
 Chain ID: | 97
 Currency symbol:| tBNB
 Block explorer URL:| https://testnet.bscscan.com
+
+To ask tBNB: [https://testnet.binance.org/faucet-smart](https://testnet.binance.org/faucet-smart)
   
 *see [howToDeployNeopuyo42Token](./deploy/howToDeployNeopuyo42Token.md) for further details*
 

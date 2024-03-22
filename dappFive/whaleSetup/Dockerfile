@@ -35,7 +35,7 @@ WORKDIR ../app
 
 
 # open port
-EXPOSE 3000
+EXPOSE 3001
 
 # Commande par défaut pour démarrer l'application
 ENTRYPOINT ["../appSetup/docker-setup.sh"]
