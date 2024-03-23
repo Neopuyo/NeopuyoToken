@@ -91,6 +91,19 @@ function transferFrom(address sender, address recipient, uint256 amount) externa
 
 <br/>
 
+🔻 **[Metamask](https://support.metamask.io/hc/en-us/articles/360015489531-Getting-started-with-MetaMask)**
+
+**MetaMask** is a web browser extension and mobile app that allows you to manage your Ethereum private keys. By doing so, it serves as a **wallet** for Ether and other tokens, and allows you to interact with **decentralized applications**, or **dapps**.
+
+**[RPC](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)**  
+`R`emote `P`rocedure `C`all, a set of protocols that allow a client (such as MetaMask) to interact with a blockchain. 
+
+
+
+
+<br/>
+
+
 🔻 **Stacking**  
 
 To **stake** tokens means locking up coins to maintain the security of a blockchain network and earning rewards in return when selected as validators.  *Binance & Ethereum : Proof-of-stake (PoS) consensus mechanism*
@@ -214,13 +227,41 @@ Play around with fake money and get familiar with the wallet.
 5. How deploy the token through something like a dApp ? following this **tutorial serie** should be interesting :  
    - [Building a Decentralized Application with BEP-20 contract in Solidity](https://programmingpercy.tech/blog/building-a-decentralized-application-with-bep-20-contract-in-solidity/)
    - [Creating a Inheritable Staking contract in Solidity](https://programmingpercy.tech/blog/creating-a-inheritable-staking-contract-in-solidity/)
-   - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)
+   - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)  
+     - [How to add a custom network RPC Metamask doc](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)  
 
 
 
 
+FIXES NOTES
 
+GANACHE DESKTOP RPC with dockerized contract  
 
+---
+
+apres truffle migrate/test vers ganache desktop : "Invalid opcode in smart contract"  
+to fix:  
+    `pragma solidity >0.4.0 <= 0.8.19;`  
+and in *truffle-config.js* :
+```
+ compilers: {
+    solc: {
+      version: "0.8.19",  
+```
+
+---
+
+En passant pas docker le localhost 127.0.0.1 classique n'est plus utilisable
+trouver l'adresse ip de la machine hote avec `ifconfig` et update le *truffle-config.js*
+
+```
+development: {
+    //  host: "127.0.0.1",     // Localhost (default: none)
+     host: "192.168.122.1", // 42 host outside docker
+     port: 8545,            // Standard Ethereum port (default: none)
+     network_id: "*",       // Any network (default: none)
+    },
+```
 
 
 <br/>

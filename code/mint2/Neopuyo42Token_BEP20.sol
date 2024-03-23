@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0; // The version of Solidity required to compile
+pragma solidity >0.4.0 <= 0.8.19; // The version of Solidity required to compile
 
 // Defining a smart-contract with `contract` keyword
 contract Token {

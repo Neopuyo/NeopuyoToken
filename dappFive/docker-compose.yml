@@ -22,6 +22,7 @@ services:
     #   - backend
     ports:
       - "3001:3001" # probably won't need this
+      # - "8545:8545" # ganache default port - lets use graphic serveur instead ? unable to rpc it
     volumes:
       - ./project/:/usr/src/app/
     # env_file:

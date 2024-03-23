@@ -19,3 +19,6 @@ _name _symbol _decimals _totalSupply
 9. import the Neopuyo42Token into your metamask wallet
 
 [`!`] run **ganache** in a terminal to test dapp
+
+
+[!] truffle-config.js ifconfig --> get ip adresse of host machine

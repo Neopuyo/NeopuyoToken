@@ -45,7 +45,7 @@ Block explorer URL:| https://bscscan.com/
 | The `test` network used | |
 | -------------------:| ------------|
 |     Network name: | BNB Chain Testnet
-Network URL: | https://data-seed-prebsc-1-s1binance.org:8545/  
+Network URL: | https://data-seed-prebsc-1-s1.binance.org:8545/
 Chain ID: | 97
 Currency symbol:| tBNB
 Block explorer URL:| https://testnet.bscscan.com
