@@ -1,4 +1,4 @@
-FROM node:21.6.2
+FROM node:21.7.1
 
 
 # Définir le répertoire de travail dans le conteneur
