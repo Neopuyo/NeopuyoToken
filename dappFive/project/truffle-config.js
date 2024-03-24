@@ -67,7 +67,8 @@ module.exports = {
     development: {
     //  host: "127.0.0.1",     // Localhost (default: none)
     // [!] get the HOST Machine IP with ifconfig !
-     host: "192.168.122.1", // 42 host outside docker
+    //  host: "192.168.122.1", // 42 host outside docker
+     host: "172.17.0.1", // Nuc Home
      port: 8545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },

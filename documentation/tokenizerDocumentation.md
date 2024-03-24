@@ -72,6 +72,12 @@ A **self-executing program** on a blockchain. Written in blockchain-specific pro
 
 <br/>
 
+🔻 **[Contract ABI Specification](https://docs.soliditylang.org/en/v0.8.25/abi-spec.html)**  
+
+The Contract `A`pplication `B`inary `I`nterface is the standard way to interact with contracts in the Ethereum ecosystem, both from outside the blockchain and for contract-to-contract interaction. Data is encoded according to its type, as described in this specification.
+
+<br/>
+
 🔻 **[ERC-20](https://academy.binance.com/en/articles/an-introduction-to-erc-20-tokens) & [BEP-20](https://academy.binance.com/en/glossary/bep-20) Tokens**
 
 BEP-20 Interface
