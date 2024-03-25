@@ -76,6 +76,8 @@ A **self-executing program** on a blockchain. Written in blockchain-specific pro
 
 The Contract `A`pplication `B`inary `I`nterface is the standard way to interact with contracts in the Ethereum ecosystem, both from outside the blockchain and for contract-to-contract interaction. Data is encoded according to its type, as described in this specification.
 
+> This ABI is a JSON file generated when `truffle compile` in `build` folder.
+
 <br/>
 
 🔻 **[ERC-20](https://academy.binance.com/en/articles/an-introduction-to-erc-20-tokens) & [BEP-20](https://academy.binance.com/en/glossary/bep-20) Tokens**
@@ -235,6 +237,7 @@ Play around with fake money and get familiar with the wallet.
    - [Creating a Inheritable Staking contract in Solidity](https://programmingpercy.tech/blog/creating-a-inheritable-staking-contract-in-solidity/)
    - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)  
      - [How to add a custom network RPC Metamask doc](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)  
+     - [!] L'app React de Percyprogamming n'est plus trop a jour [celui-ci](https://www.dappuniversity.com/articles/ethereum-dapp-react-tutorial) peux aider
 
 
 
@@ -268,6 +271,14 @@ development: {
      network_id: "*",       // Any network (default: none)
     },
 ```
+
+---
+
+You are accessing the MetaMask window.web3.currentProvider shim. This property is deprecated; use window.ethereum instead.
+
+Le tuto utilise un methode deprecated, mettre à jour en remplaçant, [doc](https://docs.metamask.io/wallet/concepts/wallet-api/) metamask concerné.
+
+---
 
 
 <br/>
