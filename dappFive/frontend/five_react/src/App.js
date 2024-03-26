@@ -54,7 +54,7 @@ function App() {
 
   async function connectWallet() {
     try {
-      await window.ethereum.enable();
+      
       if (window.ethereum) {
         // Request account access
         const accounts = await window.ethereum.request({
@@ -79,17 +79,21 @@ function App() {
         const abi = await getABI();
         const address = getFiveTokenContractAddress();
 
+        // [!] si utilisé ainsi, à séparer
         const contract = new ethers.Contract(address, abi, provider);
         setFiveToken(contract);
         
-        const totalSupply = await contract.totalSupply();
-        console.log("totalSupply = ", totalSupply);
-        setTotalSupply(ethers.formatEther(totalSupply));
+        await contract.totalSupply().then((rawValue) => {
+          const formatedValue = ethers.formatEther(rawValue);
+          console.log("totalSupply = ",rawValue, " => ", formatedValue);
+          setTotalSupply(formatedValue);
+        });
 
-        const accountBalance = await contract.balanceOf(accounts[0]);
-        console.log("accountBalance = ", accountBalance);
-        setAccountBalance(accountBalance);
-
+        await contract.balanceOf(accounts[0]).then((rawValue) => {
+           const formatedValue = ethers.formatEther(rawValue);
+           console.log("accountBalance = ",rawValue, " => ", formatedValue);
+           setAccountBalance(formatedValue);
+        });
 
       } else {
         throw new Error("Can't getWalletInfos from Metamask.");
@@ -129,9 +133,22 @@ function App() {
 
   // A hardcoded shortcut with FiveToken contract address from ganache 
   // GET CORRECT CONTRACT ADDRESS IN GANACHE
+  // need be update after each migration
   function getFiveTokenContractAddress() {
     // return "0x1917b8513697Cf919eec8E848b139013c14C8402";
-    return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
+    // return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
+    // return "0x8290DE0cd608E1643c00426404516F96565151BC";
+    // return "0xF8b182f81C9C6431c97f62a8004aE366c5f32eB9";
+    return "0x76782C6181ca62A85580473fFDDba7Ad5dba4C54";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
   }
 
 
@@ -144,8 +161,8 @@ function App() {
                 <h1> Welcome to your DAPP application</h1>
                 <p> Account : {accounts[0]}</p>
                 {totalSupply === 0 && <p>FiveToken total supply: 0</p>}
-                {totalSupply !== 0 && <p>FiveToken total supply: {totalSupply}</p>}
-                <p> Your FiveToken balance: {accountBalance}</p>
+                {totalSupply !== 0 && <p>FiveToken total supply: {totalSupply} Five</p>}
+                <p> Your FiveToken balance: {accountBalance} Five</p>
                 <button ><p>Stake</p></button>
             </header>
         </div>

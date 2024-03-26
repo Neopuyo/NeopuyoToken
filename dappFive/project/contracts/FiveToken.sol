@@ -17,13 +17,12 @@ contract FiveToken is Ownable, Stakeable {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     constructor(string memory token_name, string memory ticker, uint8 token_decimals, uint256 token_totalSupply){
-        uint256 _initialSupply = token_totalSupply;// * (10 ** token_decimals); // 5 000 000 000 * (10^18)
+        uint256 _initialSupply = token_totalSupply * (10 ** token_decimals); // 5 000 000 000 * (10^18)
         
         _name = token_name;
         _symbol = ticker;
         _decimals = token_decimals;
         _totalSupply = _initialSupply;
-        
 
         _balances[msg.sender] = _totalSupply;
 
