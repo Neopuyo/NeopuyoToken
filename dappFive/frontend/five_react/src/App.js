@@ -2,6 +2,7 @@ import './App.css';
 
 import React, { useState, useEffect } from 'react';
 import { ethers } from "ethers";
+import { getFiveTokenContractAddress } from './config/config';
 
 function App() {
 
@@ -10,7 +11,6 @@ function App() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [accountStakes, setAccountStakes] = useState({});
   const [fiveContract, setFiveContract] = useState(0);
-  // const [fiveWallet, setFiveWallet] = useState(0);
   const [signer, setSigner] = useState(null);
   const [provider, setProvider] = useState(null);
 
@@ -85,34 +85,70 @@ function App() {
     
   }
 
+
+
   async function stakeFiveTokens() {
-
-    if (typeof fiveContract === "undefined") {
-      console.log("typeof fiveContract === undefined");
-      return;
-    }
-
-    if (!signer) {
-      console.log("signer is NULL");
-      return ; 
-    }
-
-    await signer.getAddress().then((result) => {
-        console.log("signerAddress = ", result);
-    });
-
-    const abi = await getABI();
-    const address = getFiveTokenContractAddress();
-    const privateKey = getPrivateKey();
-    const wallet = new ethers.Wallet(privateKey, provider);
-
-    const contractS = new ethers.Contract(address, abi, wallet);
-    const amount = ethers.parseEther("1472"); // convertit l'Ether en Wei
     
-    const tx = await contractS.stake(amount);
-    const receipt = await tx.wait();
+    try {
+      const amount = 1472;
+      const abi = await getABI();
+      const address = getFiveTokenContractAddress();
+      // const privateKey = getPrivateKey();
+      // const wallet = new ethers.Wallet(privateKey, provider);
 
-    console.log("Stake transaction Done receipt : ", receipt);
+
+  
+      const contractS = new ethers.Contract(address, abi, signer);
+      const amountParsed = ethers.parseEther(amount.toString());
+      
+
+      // Estimate gas cost and ask confirmation
+      const gasEstimate = await contractS.stake.estimateGas(amountParsed);
+      const gasPrice = (await provider.getFeeData()).gasPrice;
+
+      console.log("gasPrice : ", gasPrice);
+      console.log("gasEstimate : ", gasEstimate);
+
+      const gasCost = gasEstimate * gasPrice;
+      const gasCostInEth = ethers.formatEther(gasCost);
+      console.log("gasCost : ", gasCost);
+
+      console.log("Gas cost: ", gasCostInEth, " Ether");
+
+      // Ask confirmation request via MetaMask
+      const confirmed = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            to: address,
+            from: await signer.getAddress(),
+            value: "0x0",
+            gas: gasEstimate.toString(),
+            gasPrice: gasPrice.toString(),
+            data: contractS.interface.encodeFunctionData("stake", [amountParsed]),
+          },
+        ],
+      });
+
+      if (!confirmed) {
+        console.log("Transaction canceled.");
+        return;
+      }
+
+      console.log("Transaction validate, waiting for process...");
+
+      // Wait 
+      const receipt = await provider.waitForTransaction(confirmed);
+
+      console.log("Stake transaction Done receipt : ", receipt);
+
+  
+      console.log("Stake transaction Done receipt : ", receipt);
+      // // [!] Fake update --> TODO listen method
+      setAccountBalance(accountBalance - amount);
+    } catch (error) {
+      console.log("stakeFiveTokens Error : ", error.message);
+    }
 
   }
 
@@ -142,44 +178,6 @@ function App() {
         throw new Error('Invalid ABI format.');
       }
   }
-
-  // A hardcoded shortcut with FiveToken contract address from ganache 
-  // GET CORRECT CONTRACT ADDRESS IN GANACHE
-  // need be update after each migration
-  function getFiveTokenContractAddress() {
-    // return "0x1917b8513697Cf919eec8E848b139013c14C8402";
-    // return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
-    // return "0x8290DE0cd608E1643c00426404516F96565151BC";
-    // return "0xF8b182f81C9C6431c97f62a8004aE366c5f32eB9";
-    // return "0x76782C6181ca62A85580473fFDDba7Ad5dba4C54";
-    return "0x025998C6322385CC0b371dB602C8796Dde41DC59";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-  }
-
-  function getPrivateKey() {
-    return "0x3197c4a8fc6b0a9438304a7ffe40a3c782fd1ff52a174c57b6483b8fcb0d966e";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-    // return "";
-  }
-
-
-
-
 
   return (
         <div className="App">
@@ -383,3 +381,55 @@ export default App;
 
 
 */
+
+
+
+/* ------------------------------------------------------- */
+
+  /* version utilisant directement wallet avec privatekey pas de confirmation metamask
+  async function stakeFiveTokens() {
+    
+    try {
+      const amount = 1472;
+      const abi = await getABI();
+      const address = getFiveTokenContractAddress();
+      const privateKey = getPrivateKey();
+      const wallet = new ethers.Wallet(privateKey, provider);
+
+
+  
+      const contractS = new ethers.Contract(address, abi, wallet);
+      const amountParsed = ethers.parseEther(amount.toString());
+      
+
+      // Estimate gas cost and ask confirmation
+      const gasEstimate = await contractS.stake.estimateGas(amountParsed);
+      const gasPrice = (await provider.getFeeData()).gasPrice;
+
+      console.log("gasPrice : ", gasPrice);
+      console.log("gasEstimate : ", gasEstimate);
+
+      const gasCost = gasEstimate * gasPrice;
+      const gasCostInEth = ethers.formatEther(gasCost);
+      console.log("gasCost : ", gasCost);
+
+      // // Demander une confirmation à l'utilisateur
+      // const confirmed = window.confirm(`Estimated Gas cost for this transaction is ${gasCostInEth} Ether. Would you like to continue ?`);
+
+      // if (!confirmed) { return; }
+
+
+
+      const tx = await contractS.stake(amountParsed);
+      const receipt = await tx.wait();
+  
+      console.log("Stake transaction Done receipt : ", receipt);
+      // [!] Fake update --> TODO listen method
+      setAccountBalance(accountBalance - amount);
+    } catch (error) {
+      console.log("stakeFiveTokens Error : ", error.message);
+    }
+
+  }
+  */
+
