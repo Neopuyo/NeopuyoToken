@@ -237,8 +237,7 @@ Play around with fake money and get familiar with the wallet.
    - [Creating a Inheritable Staking contract in Solidity](https://programmingpercy.tech/blog/creating-a-inheritable-staking-contract-in-solidity/)
    - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)  
      - [How to add a custom network RPC Metamask doc](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)  
-     - [!] L'app React de Percyprogamming n'est plus trop a jour [celui-ci](https://www.dappuniversity.com/articles/ethereum-dapp-react-tutorial) peux aider -> bof
-     - [tentative avec la lib ethers](https://docs.ethers.org/v6/getting-started/)
+     - [tentative avec la lib ethers](https://docs.ethers.org/v6/getting-started/) Le front de Percyprograming est outdated
 
 
 

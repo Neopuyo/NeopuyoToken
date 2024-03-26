@@ -37,59 +37,69 @@ import { ethers } from "ethers";
 
 function App() {
 
-  const [fiveToken, setFiveToken] = useState(0);
   const [accounts, setAccounts] = useState(0);
-  const [loaded, setLoaded] = useState(false);
   const [totalSupply, setTotalSupply] = useState(0);
   const [accountBalance, setAccountBalance] = useState(0);
   const [accountStakes, setAccountStakes] = useState({});
+  const [fiveContract, setFiveContract] = useState(0);
+  
+
+  // ethers lib
+  let provider;
+  let signer;
 
   useEffect(() => {
     // Here we check if there is web3 support / if metamask is installed
     connectWallet();
-    getWalletInfos();
-
-    
   }, []);
+
+  useEffect(() => {
+    // let time to connectWallet to retrieve account
+    if (isMetamaskConnected()) {
+      getWalletInfos();
+    }
+  }, [fiveContract]);
 
   async function connectWallet() {
     try {
       
       if (window.ethereum) {
+        
         // Request account access
         const accounts = await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
-
         setAccounts(accounts);
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = provider.getSigner();
+
+        const abi = await getABI();
+        const address = getFiveTokenContractAddress();
+        setFiveContract(new ethers.Contract(address, abi, provider));
       } else {
         console.error('MetaMask is needed to use this dapp.');
       }
     } catch (error) {
-      console.error(error);
+      console.log("connectWallet Error : ", error.message);
     }
+  }
+
+  function isMetamaskConnected() {
+    return typeof fiveContract !== "undefined" 
+      && typeof accounts[0] !== "undefined"
   }
 
   async function getWalletInfos() {
     try {
       if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = provider.getSigner();
-
-        const abi = await getABI();
-        const address = getFiveTokenContractAddress();
-
-        // [!] si utilisé ainsi, à séparer
-        const contract = new ethers.Contract(address, abi, provider);
-        setFiveToken(contract);
-        
-        await contract.totalSupply().then((rawValue) => {
+        await fiveContract.totalSupply().then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
           console.log("totalSupply = ",rawValue, " => ", formatedValue);
           setTotalSupply(formatedValue);
-        });
+        })
 
-        await contract.balanceOf(accounts[0]).then((rawValue) => {
+        await fiveContract.balanceOf(accounts[0]).then((rawValue) => {
            const formatedValue = ethers.formatEther(rawValue);
            console.log("accountBalance = ",rawValue, " => ", formatedValue);
            setAccountBalance(formatedValue);
@@ -99,9 +109,34 @@ function App() {
         throw new Error("Can't getWalletInfos from Metamask.");
       }
     } catch (error) {
-      console.error(error);
+      console.log("getWalletInfos Error : ", error.message);
     }
     
+  }
+
+  function stakeFiveTokens() {
+    const amount = 1472;
+
+    if (typeof fiveContract === "undefined") {
+      console.log("typeof fiveContract === undefined");
+      return;
+    }
+    
+
+    signer.estimateGas({from: accounts[0]});
+    fiveContract.stake(amount).estimateGas({from: accounts[0]})
+      .then((gas) => {
+        fiveContract.stake(amount).send({
+          from: accounts[0],
+          gas: gas,
+        });
+
+        // [!] Fake update of account by changing stake, Trigger a reload when transaction is done later
+        setAccountBalance(accountBalance-amount);
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
   }
 
   async function getABI() {
@@ -163,7 +198,7 @@ function App() {
                 {totalSupply === 0 && <p>FiveToken total supply: 0</p>}
                 {totalSupply !== 0 && <p>FiveToken total supply: {totalSupply} Five</p>}
                 <p> Your FiveToken balance: {accountBalance} Five</p>
-                <button ><p>Stake</p></button>
+                <button onClick={stakeFiveTokens}><p>Stake</p></button>
             </header>
         </div>
       );
