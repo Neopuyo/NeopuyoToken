@@ -1,39 +1,7 @@
 import './App.css';
-import React, { useState, useEffect, Component } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { ethers } from "ethers";
-
-
-
-// class App extends Component {
-//   componentWillMount() {
-//     this.loadBlockchainData()
-//   }
-
-//   async loadBlockchainData() {
-//     const web3 = new Web3(Web3.givenProvider || "http://localhost:8545")
-//     const accounts = await web3.eth.getAccounts()
-//     this.setState({ account: accounts[0] })
-//   }
-
-//   constructor(props) {
-//     super(props)
-//     this.state = { account: '' }
-//   }
-
-//   render() {
-//     return (
-//       <div className="container">
-//         <h1>Hello, World!</h1>
-//         <p>Your account: {this.state.account}</p>
-//       </div>
-//     );
-//   }
-// }
-
-// export default App;
-
-
-//------------------------------------------------------------------
 
 function App() {
 
@@ -42,11 +10,10 @@ function App() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [accountStakes, setAccountStakes] = useState({});
   const [fiveContract, setFiveContract] = useState(0);
-  
+  // const [fiveWallet, setFiveWallet] = useState(0);
+  const [signer, setSigner] = useState(null);
+  const [provider, setProvider] = useState(null);
 
-  // ethers lib
-  let provider;
-  let signer;
 
   useEffect(() => {
     // Here we check if there is web3 support / if metamask is installed
@@ -66,17 +33,21 @@ function App() {
       if (window.ethereum) {
         
         // Request account access
-        const accounts = await window.ethereum.request({
+        const accountsStamp = await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
-        setAccounts(accounts);
+        setAccounts(accountsStamp);
 
-        provider = new ethers.BrowserProvider(window.ethereum);
-        signer = provider.getSigner();
+        // const providerStamp = new ethers.BrowserProvider(window.ethereum);
+        const providerStamp = new ethers.JsonRpcProvider();
+        const signerStamp = await providerStamp.getSigner();
+        setSigner(signerStamp);
+        setProvider(providerStamp);
 
         const abi = await getABI();
         const address = getFiveTokenContractAddress();
-        setFiveContract(new ethers.Contract(address, abi, provider));
+
+        setFiveContract(new ethers.Contract(address, abi, providerStamp));
       } else {
         console.error('MetaMask is needed to use this dapp.');
       }
@@ -114,29 +85,35 @@ function App() {
     
   }
 
-  function stakeFiveTokens() {
-    const amount = 1472;
+  async function stakeFiveTokens() {
 
     if (typeof fiveContract === "undefined") {
       console.log("typeof fiveContract === undefined");
       return;
     }
+
+    if (!signer) {
+      console.log("signer is NULL");
+      return ; 
+    }
+
+    await signer.getAddress().then((result) => {
+        console.log("signerAddress = ", result);
+    });
+
+    const abi = await getABI();
+    const address = getFiveTokenContractAddress();
+    const privateKey = getPrivateKey();
+    const wallet = new ethers.Wallet(privateKey, provider);
+
+    const contractS = new ethers.Contract(address, abi, wallet);
+    const amount = ethers.parseEther("1472"); // convertit l'Ether en Wei
     
+    const tx = await contractS.stake(amount);
+    const receipt = await tx.wait();
 
-    signer.estimateGas({from: accounts[0]});
-    fiveContract.stake(amount).estimateGas({from: accounts[0]})
-      .then((gas) => {
-        fiveContract.stake(amount).send({
-          from: accounts[0],
-          gas: gas,
-        });
+    console.log("Stake transaction Done receipt : ", receipt);
 
-        // [!] Fake update of account by changing stake, Trigger a reload when transaction is done later
-        setAccountBalance(accountBalance-amount);
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
   }
 
   async function getABI() {
@@ -174,7 +151,21 @@ function App() {
     // return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
     // return "0x8290DE0cd608E1643c00426404516F96565151BC";
     // return "0xF8b182f81C9C6431c97f62a8004aE366c5f32eB9";
-    return "0x76782C6181ca62A85580473fFDDba7Ad5dba4C54";
+    // return "0x76782C6181ca62A85580473fFDDba7Ad5dba4C54";
+    return "0x025998C6322385CC0b371dB602C8796Dde41DC59";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+  }
+
+  function getPrivateKey() {
+    return "0x3197c4a8fc6b0a9438304a7ffe40a3c782fd1ff52a174c57b6483b8fcb0d966e";
     // return "";
     // return "";
     // return "";
@@ -210,139 +201,185 @@ export default App;
 
 
 
+/****************************************** */
 
+/*
+function App() {
+  const [provider, setProvider] = useState(null);
+  const [accounts, setAccounts] = useState(null);
+  const [network, setNetwork] = useState('');
+  const [contractP, setContractP] = useState(null);
+  const [contractS, setContractS] = useState(null);
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [accountBalance, setAccountBalance] = useState(0);
 
+  useEffect(() => {
+    const initializeProvider = async () => {
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        
+        setAccounts(accounts);
+        setProvider(provider);
+      }
+    };
 
-
-
-
-
-
-
-//------------------------------------------------------------------
-// function App() {
-
-//   const [fiveToken, setFiveToken] = useState(0);
-//   const [accounts, setAccounts] = useState(0);
-//   const [loaded, setLoaded] = useState(false);
-//   const [totalSupply, setTotalSupply] = useState(0);
-//   const [accountBalance, setAccountBalance] = useState(0);
-//   const [accountStakes, setAccountStakes] = useState({});
-
-
-//   useEffect(() => {
-//     // Here we check if there is web3 support / if metamask is installed
-//     if (typeof window.ethereum !== 'undefined') {      
-//       const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-      
-
-//       const fetchAccounts = async () => {
-//         const accounts = await web3.eth.getAccounts();
-//         setAccounts(accounts);
-//       }
-
-//       const getFiveTokenContract = async () => {
-//         const abi = await getABI();
-//         const address = getFiveTokenContractAddress();
-//         const fiveToken = new web3.eth.Contract(abi, address); // Make a new instance of the contract'
-//         setFiveToken(fiveToken);
-//       }
-
-//       fetchAccounts();
-//       getFiveTokenContract();
-
-//     } else {
-//       // MetaMask is not installed
-//       throw new Error("MetaMask is not installed. Please install it to use this DAPP.");
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     if (loaded && (accounts !== 0) && ((fiveToken !== 0) || (typeof fiveToken.methods !== 'undefined'))) {
-//       // console.log("accounts :", accounts);
-//       getUserProfile();
-//     } else {
-//     // dirty trick to trigger reload if something went wrong
-//       setTimeout(setLoaded(true), 500);
-//     }
-//   }, [loaded, accounts]);
-
-
-//   async function getABI() {
-//     let ABI = "";
-
-//     await fetch("./FiveToken.json", {
-//       headers : {
-//         'Accept': 'application.json',
-//         'Content-Type': 'application.json',
-//       }
-//     }).then((response) => {
-//       if (response.status === 200) {
-//         return response.json();
-//       } else {
-//         throw new Error('Error fetching ABI (FiveToken.json)');
-//       }
-//     }).then((data) => {
-//       ABI = data.abi; // [!] need abi, not all json
-//     }).catch((error) => {
-//       throw new Error(error);
-//     });
-
-//     if (Array.isArray(ABI) && ABI.length > 0) {
-//         return ABI;
-//       } else {
-//         throw new Error('Invalid ABI format.');
-//       }
-//   }
-
-//   async function getUserProfile() {
+    initializeProvider();
+  }, []);
   
-//     call(fiveToken.methods.balanceOf, setAccountBalance, accounts[0]);
-//     call(fiveToken.methods.hasStake, setAccountStakes, accounts[0]);
-//     call(fiveToken.methods.totalSupply, setTotalSupply);
+  useEffect(() => {
 
-//     // await fiveToken.methods.totalSupply().call()
-//     // .then((result) => {
-//     //   setTotalSupply(result);
-//     // })
-//     // .catch((error) => {
-//     //   throw new Error(error);
-//     // })
-//     if (typeof totalSupply === 'number') {  
-//         console.log("totalSupply = ", totalSupply);
-//     }
-//   }
+    const getContract = async () => {
+      const signer = provider.getSigner();
+      const abi = await getABI();
+      const contractAddress = getFiveTokenContractAddress();
 
-//   // A hardcoded shortcut with FiveToken contract address from ganache 
-//   // GET CORRECT CONTRACT ADDRESS IN GANACHE
-//   function getFiveTokenContractAddress() {
-//     // return "0x1917b8513697Cf919eec8E848b139013c14C8402";
-//     return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
-//   }
+      const contractP = new ethers.Contract(contractAddress, abi, provider);
+      setContractP(contractP);
 
-//   function call(func, callback, ...args) {
-//     func(...args).call()
-//     .then((result) => {
-//       callback(result);
-//     })
-//     .catch((error) => {
-//       throw new Error(error);
-//     })
-//   }
+      const contractS = new ethers.Contract(contractAddress, abi, signer);
+      setContractS(contractS);
+    }
+
+     const getNetwork = async () => {
+      const network = await provider.getNetwork();
+      setNetwork(network.name);
+    };
+
+    if (provider && accounts) {
+      getContract();
+      getNetwork();
+      getWalletInfos();
+    }
+  }, [provider, accounts]); // refaire plutot comme avant pour ca
 
 
-//   return (
-//     <div className="App">
-//         <header className="App-header">
-//             <h1> Welcome to your DAPP application</h1>
-//             <p> Account : {accounts[0]}</p>
-//             {totalSupply === 0 && <p>FiveToken total supply: 0</p>}
-//             {totalSupply !== 0 && <p>FiveToken total supply: {totalSupply}</p>}
-//             <p> Your FiveToken balance: {accountBalance}</p>
-//             <button ><p>Stake</p></button>
-//         </header>
-//     </div>
-//   );
-// }
+  function stakeFiveTokens() {
+    const amount = 1472;
 
-// export default App;
+    if (!contractS) {
+      console.log("contractSigner is null");
+      return;
+    }
+    
+    contractS.stake(amount).estimateGas({from: accounts[0]})
+      .then((gas) => {
+        contractS.stake(amount).send({
+          from: accounts[0],
+          gas: gas,
+        });
+
+        // [!] Fake update of account by changing stake, Trigger a reload when transaction is done later
+        setAccountBalance(accountBalance - amount);
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
+  }
+
+  async function getWalletInfos() {
+    try {
+      if (window.ethereum) {
+        await contractP.totalSupply().then((rawValue) => {
+          const formatedValue = ethers.formatEther(rawValue);
+          console.log("totalSupply = ",rawValue, " => ", formatedValue);
+          setTotalSupply(formatedValue);
+        })
+
+        await contractP.balanceOf(accounts[0]).then((rawValue) => {
+           const formatedValue = ethers.formatEther(rawValue);
+           console.log("accountBalance = ",rawValue, " => ", formatedValue);
+           setAccountBalance(formatedValue);
+        });
+
+      } else {
+        throw new Error("Can't getWalletInfos from Metamask.");
+      }
+    } catch (error) {
+      console.log("getWalletInfos Error : ", error.message);
+    }
+    
+  }
+
+
+  const interactWithContract = async () => {
+    if (contractP) {
+      await contractP.totalSupply().then((rawValue) => {
+        const formatedValue = ethers.formatEther(rawValue);
+        console.log("totalSupply = ",rawValue, " => ", formatedValue);
+        setTotalSupply(formatedValue);
+      })
+    }
+  };
+  
+
+  async function getABI() {
+    let ABI = "";
+
+    await fetch("./FiveToken.json", {
+      headers : {
+        'Accept': 'application.json',
+        'Content-Type': 'application.json',
+      }
+    }).then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error('Error fetching ABI (FiveToken.json)');
+      }
+    }).then((data) => {
+      ABI = data.abi; // [!] need abi, not all json
+    }).catch((error) => {
+      throw new Error(error);
+    });
+
+    if (Array.isArray(ABI) && ABI.length > 0) {
+        return ABI;
+      } else {
+        throw new Error('Invalid ABI format.');
+      }
+  }
+
+    // A hardcoded shortcut with FiveToken contract address from ganache 
+  // GET CORRECT CONTRACT ADDRESS IN GANACHE
+  // need be update after each migration
+  function getFiveTokenContractAddress() {
+    // return "0x1917b8513697Cf919eec8E848b139013c14C8402";
+    // return "0x30Dbdcb045f6EB1A058c10f2acdFC69C26e3F3c0";
+    // return "0x8290DE0cd608E1643c00426404516F96565151BC";
+    // return "0xF8b182f81C9C6431c97f62a8004aE366c5f32eB9";
+    // return "0x76782C6181ca62A85580473fFDDba7Ad5dba4C54";
+    return "0x025998C6322385CC0b371dB602C8796Dde41DC59";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+    // return "";
+  }
+
+
+
+
+  return (
+    <div className="App">
+        <header className="App-header">
+            <h1> Welcome to your DAPP</h1>
+            <p>Connected to network: {network}</p>
+            {accounts !== null &&<p> Account : {accounts[0]}</p>}
+            <p> Your FiveToken balance: {accountBalance} Five</p>
+            {totalSupply !== 0 && <p>FiveToken total supply: {totalSupply} Five</p>}
+            <button onClick={interactWithContract}>Display</button>
+            <button onClick={stakeFiveTokens}><p>Stake</p></button>
+        </header>
+    </div>
+  );
+
+}
+
+export default App;
+
+
+*/
