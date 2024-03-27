@@ -2,7 +2,7 @@
   // GET CORRECT CONTRACT ADDRESS IN GANACHE
   // need be update after each migration
   export function getFiveTokenContractAddress() {
-    return "0xAb5bC48E2E724DA0394feBab20284A03E8970114";
+    return "0xEe2d77f5447cE1eE38370aA2d457180EedD05B22";
   }
 
   // Owner private key, accounts[0] from Ganache
