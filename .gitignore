@@ -1,3 +1,4 @@
 node_modules/
 **/*.secret
+**/*secrets.json
 bnb-chain-tutorial/

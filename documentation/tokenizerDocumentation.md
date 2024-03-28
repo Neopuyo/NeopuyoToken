@@ -241,12 +241,15 @@ Play around with fake money and get familiar with the wallet.
      - [How to add a custom network RPC Metamask doc](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)  
      - [tentative avec la lib ethers](https://docs.ethers.org/v6/getting-started/) Le front de Percyprograming est outdated | la doc Ethers.js est pauvre je m'aide de cet [article medium](https://medium.com/coinmonks/integrating-ether-js-with-react-a-comprehensive-guide-cd9ccba57b93)
    - [Deploying Smart Contracts to Binance Smart chain with Truffle](https://programmingpercy.tech/blog/deploying-smart-contracts-to-binance-smart-chain-with-truffle/)
+6. - Truffle and Ganache [deprecated : Consensys Announces the Sunset of Truffle and Ganache and New Hardhat Partnership](https://consensys.io/blog/consensys-announces-the-sunset-of-truffle-and-ganache-and-new-hardhat) (2023) need migrate to RedHat
+   - [Using Hardhat for Deploying Smart Contracts on BSC - doc](https://docs.bnbchain.org/docs/hardhat-new/)
 
 
 
 FIXES NOTES
 
 GANACHE DESKTOP RPC with dockerized contract  
+Ganache deprecated -> check red hat now
 
 ---
 
