@@ -97,6 +97,8 @@ function approve(address spender, uint256 amount) external returns (bool);
 function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 ```
 
+> Here [BEP20 token smart contract template](https://github.com/bnb-chain/bsc-genesis-contract/blob/master/contracts/bep20_template/BEP20Token.template) from [BNB Chain Documentation](https://docs.bnbchain.org/docs/truffle-new/)
+
 <br/>
 
 🔻 **[Metamask](https://support.metamask.io/hc/en-us/articles/360015489531-Getting-started-with-MetaMask)**
