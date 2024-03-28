@@ -1,4 +1,5 @@
-FROM node:21.6.2
+FROM node:20.12.0
+# current LTS long term support
 
 
 # Définir le répertoire de travail dans le conteneur
