@@ -238,7 +238,7 @@ Play around with fake money and get familiar with the wallet.
    - [Using a Smart contract in an Web Application](https://programmingpercy.tech/blog/using-a-smart-contract-in-an-web-application/)  
      - [How to add a custom network RPC Metamask doc](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)  
      - [tentative avec la lib ethers](https://docs.ethers.org/v6/getting-started/) Le front de Percyprograming est outdated | la doc Ethers.js est pauvre je m'aide de cet [article medium](https://medium.com/coinmonks/integrating-ether-js-with-react-a-comprehensive-guide-cd9ccba57b93)
-
+   - [Deploying Smart Contracts to Binance Smart chain with Truffle](https://programmingpercy.tech/blog/deploying-smart-contracts-to-binance-smart-chain-with-truffle/)
 
 
 
