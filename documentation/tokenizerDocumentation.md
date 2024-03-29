@@ -106,7 +106,9 @@ function transferFrom(address sender, address recipient, uint256 amount) externa
 **MetaMask** is a web browser extension and mobile app that allows you to manage your Ethereum private keys. By doing so, it serves as a **wallet** for Ether and other tokens, and allows you to interact with **decentralized applications**, or **dapps**.
 
 **[RPC](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)**  
-`R`emote `P`rocedure `C`all, a set of protocols that allow a client (such as MetaMask) to interact with a blockchain. 
+`R`emote `P`rocedure `C`all, a set of protocols that allow a client (such as MetaMask) to interact with a blockchain.  
+[Public RPC Nodes of Bsc](https://docs.bscscan.com/misc-tools-and-utilities/public-rpc-nodes)
+
 
 
 
@@ -244,7 +246,7 @@ Play around with fake money and get familiar with the wallet.
 6. - Truffle and Ganache [deprecated : Consensys Announces the Sunset of Truffle and Ganache and New Hardhat Partnership](https://consensys.io/blog/consensys-announces-the-sunset-of-truffle-and-ganache-and-new-hardhat) (2023) need migrate to Hardhat
    - [Using Hardhat for Deploying Smart Contracts on BSC - doc](https://docs.bnbchain.org/docs/hardhat-new/) Seems not working well, let's try this [medium tuto](https://medium.com/@melihgunduz/deploying-smart-contract-to-bsc-testnet-with-hardhat-aa7b046eea1d) from nov 2023
    - [Hardhat doc tutorial (updated 20 march 2024)](https://hardhat.org/tutorial) if need reset from scratch ... included a boilerplate project code
-
+7. - seems Bsc testnet not working (yet / anymore ?) -> let's follow **Hardhat** doc that advise to deploy on [Ethereum](https://ethereum.org/en/developers/docs/networks/#ethereum-testnets) with **sepolia testnet** in this, [doc](https://docs.alchemy.com/docs/how-to-deploy-a-smart-contract-to-the-sepolia-testnet) from **Alchemy**
 
 
 FIXES NOTES

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 async function main() {
   const Renting = await ethers.deployContract("Renting"); //defining our contract
 
-  // For Ts requirements (Renting.deploymentTransaction() may be null)
+  // For Typescript requirements (Renting.deploymentTransaction() may be null)
   const deploymentTransaction = Renting.deploymentTransaction();
   if (deploymentTransaction) {
     console.log('Contract deploying by:', deploymentTransaction.from);
