@@ -107,7 +107,7 @@ function transferFrom(address sender, address recipient, uint256 amount) externa
 
 **[RPC](https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC)**  
 `R`emote `P`rocedure `C`all, a set of protocols that allow a client (such as MetaMask) to interact with a blockchain.  
-[Public RPC Nodes of Bsc](https://docs.bscscan.com/misc-tools-and-utilities/public-rpc-nodes)
+[Public RPC Nodes of Bsc](https://docs.bnbchain.org/docs/BSCtestnet/)
 
 
 

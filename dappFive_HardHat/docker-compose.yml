@@ -4,14 +4,6 @@ networks:
   fiveNetwork:
     name: fiveNetwork
 
-# volumes:
-#   dappVolume2:
-#     driver: local
-#     driver_opts:
-#       device: ./project/
-#       o: bind
-#       type: none
-
 services:
   project:
     build:
