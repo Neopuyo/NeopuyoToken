@@ -201,10 +201,15 @@ npm install -g ganache
 
 <br/>
 
-**`HardHat`**| Framework
+**`HardHat` ✅**| Framework
 --- | ---
 **npm** | Need a node environment
 **Ethereum** | Ethereum development environment
+**Fresh updated Doc** | last updated march 2024
+**Basics** | `npx hardhat clean` &emsp; `npx hardhat compile`  <br/> `npx hardhat test` &emsp; `npx hardhat run --network testnet scripts/deploy.ts`  <br/> `npx hardhat verify --network testnet 0xDEPLOYED_CONTRACT_ADDRESS` <br/> `npx hardhat node` &emsp; `npx hardhat ignition deploy ./ignition/modules/Lock.ts`
+
+> Note : **Truffle** and **Ganache** will not be supported anymore, their teams are migrating to **Hardhat**  
+[Consensys Announces the Sunset of Truffle and Ganache and New Hardhat Partnership](https://consensys.io/blog/consensys-announces-the-sunset-of-truffle-and-ganache-and-new-hardhat) *september 2023*
 
 <br/>
 
@@ -246,7 +251,9 @@ Play around with fake money and get familiar with the wallet.
 6. - Truffle and Ganache [deprecated : Consensys Announces the Sunset of Truffle and Ganache and New Hardhat Partnership](https://consensys.io/blog/consensys-announces-the-sunset-of-truffle-and-ganache-and-new-hardhat) (2023) need migrate to Hardhat
    - [Using Hardhat for Deploying Smart Contracts on BSC - doc](https://docs.bnbchain.org/docs/hardhat-new/) Seems not working well, let's try this [medium tuto](https://medium.com/@melihgunduz/deploying-smart-contract-to-bsc-testnet-with-hardhat-aa7b046eea1d) from nov 2023
    - [Hardhat doc tutorial (updated 20 march 2024)](https://hardhat.org/tutorial) if need reset from scratch ... included a boilerplate project code
-7. - seems Bsc testnet not working (yet / anymore ?) -> let's follow **Hardhat** doc that advise to deploy on [Ethereum](https://ethereum.org/en/developers/docs/networks/#ethereum-testnets) with **sepolia testnet** in this, [doc](https://docs.alchemy.com/docs/how-to-deploy-a-smart-contract-to-the-sepolia-testnet) from **Alchemy**
+7. - seems Bsc testnet not working (yet / anymore ?) -> let's follow **Hardhat** doc that advise to deploy on [Ethereum](https://ethereum.org/en/developers/docs/networks/#ethereum-testnets) with **sepolia testnet** in this, [doc](https://docs.alchemy.com/docs/how-to-deploy-a-smart-contract-to-the-sepolia-testnet) from **Alchemy**  
+***Aborted** : Sepolia Faucet need holding 0.001 ETH on mainnet to give sepoliaETH*  
+8. - Bsc testnet is working back ! Can go on from point 6. Let's now implement our own contract from Percy tutorials deloy them with Hardhat and then interact with it from the rReact dapp.
 
 
 FIXES NOTES

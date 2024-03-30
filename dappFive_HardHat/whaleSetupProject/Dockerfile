@@ -8,7 +8,7 @@ RUN mkdir -p /usr/src/appSetup
 WORKDIR /usr/src/appSetup
 
 
-COPY ./whaleSetup/docker-setup.sh .
+COPY ./whaleSetupProject/docker-setup.sh .
 RUN chmod +x docker-setup.sh
 
 WORKDIR ../app

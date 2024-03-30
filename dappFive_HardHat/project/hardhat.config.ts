@@ -13,8 +13,6 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    // Your API key for Etherscan
-    // Obtain one at https://bscscan.com/
     apiKey: bscscanApiKey
   },
   sourcify: {

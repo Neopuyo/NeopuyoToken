@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  fiveNetwork:
+    name: fiveNetwork
+
+# volumes:
+#   dappVolume2:
+#     driver: local
+#     driver_opts:
+#       device: ./project/
+#       o: bind
+#       type: none
+
+services:
+  project:
+    build:
+      context: .
+      dockerfile: ./whaleSetupProject/Dockerfile
+    container_name: ${NAME}
+    ports:
+      - "3001:3001" # probably won't need this
+    volumes:
+      - ./project/:/usr/src/app/
+    networks:
+      - fiveNetwork
+    restart: always
+
+  react-five:
+    build:
+      context: ./frontend/
+      dockerfile: ./whaleSetupFrontend/Dockerfile
+    container_name: ${NAME}-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/five_react/:/usr/src/app/five_react
+    networks:
+      - fiveNetwork
+    restart: always
+    depends_on:
+      - project
