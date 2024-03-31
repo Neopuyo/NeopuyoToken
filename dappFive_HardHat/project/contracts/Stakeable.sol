@@ -46,7 +46,7 @@ contract Stakeable {
     }
 
     function _stake(uint256 amount) internal {
-        require(amount > 0, "Cannot stake a 0 amount");
+        require(amount > 0, "Staking: Cannot stake a 0 amount");
 
         uint256 senderIndex = indexOf[msg.sender];
         uint256 timestamp = block.timestamp;
@@ -78,6 +78,7 @@ contract Stakeable {
          if (current_stake.amount == 0) {
             // clean empty stake for gas refund
             delete stakeholders[user_index].address_stakes[index];
+
          } else {
             stakeholders[user_index].address_stakes[index].amount = current_stake.amount; 
             stakeholders[user_index].address_stakes[index].since = block.timestamp; // Reset timer of stake    

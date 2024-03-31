@@ -7,7 +7,7 @@ describe("FiveToken", function () {
   let deployer: any;
   let addr1: any;
   let addr2: any;
-  const zeroAddress = '0x0000000000000000000000000000000000000000'
+  const zeroAddress = '0x0000000000000000000000000000000000000000';
 
   beforeEach(async function () {
     const FiveToken = await ethers.getContractFactory("FiveToken");
@@ -22,7 +22,7 @@ describe("FiveToken", function () {
     const totalSupplyRaw = await fiveToken.totalSupply();
     const totalSupply = ethers.formatEther(totalSupplyRaw);
 
-    expect(parseInt(totalSupply)).to.equal(5000000000, "Initial supply was not the same as in migration");
+    expect(parseInt(totalSupply)).to.equal(5000000000, "Initial supply is supposed to be 5 billions");
   });
 
   it("minting", async function () {
