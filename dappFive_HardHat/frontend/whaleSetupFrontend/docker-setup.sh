@@ -11,23 +11,23 @@ echo $(npm --version)
 mkdir -p five_react
 chmod -R 777 five_react
 
-npm install -g create-react-app
+npm install -g create-next-app@latest
 
 cd five_react
-# npm install --save-dev typescript
-npm install
 
+
+npm install
 
 
 echo -e "\033[0;32mInstalling dependencies complete\033[0m"
 
 
 
-# To DEBUG
+# To DEBUG or start build app
 # tail -f /dev/null
 
-# to run in developpement mode
-npm start
+# to run in developpement mode (with nextJs)
+npm run dev
 
 # to run in production mode
 # npm run build
