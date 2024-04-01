@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { advanceTimeAndBlock } from "./tools/handle_time";
 
 describe("Stakeable_2", () => {
   let fiveToken: any;
@@ -8,7 +9,6 @@ describe("Stakeable_2", () => {
   let addr2: any;
   const zeroAddress = '0x0000000000000000000000000000000000000000';
   const stakeAmount = ethers.parseEther("400");
-  const withdrawAmount = ethers.parseEther("200");
 
   beforeEach(async function () {
     const FiveToken = await ethers.getContractFactory("FiveToken");
@@ -42,15 +42,15 @@ describe("Stakeable_2", () => {
   });
 
   it("check the setup (2/2)", async function () {
-    const stakes = await fiveToken.hasStake(deployer);
-    const totalStake = parseInt(ethers.formatEther(stakes[0]));
+    const summary = await fiveToken.hasStake(deployer);
+    const totalStake = parseInt(ethers.formatEther(summary.total_amount));
     expect(totalStake).to.equal(800, "The total staking should be 800");
     
-    const stake1 = stakes[1][0];
+    const stake1 = summary.stakes[0];
     const stake1Amount = parseInt(ethers.formatEther(stake1.amount));
     expect(stake1Amount).to.equal(400, "The first staking should be 400");
 
-    const stake2 = stakes[1][1];
+    const stake2 = summary.stakes[1];
     const stake2Amount = parseInt(ethers.formatEther(stake2.amount));
     expect(stake2Amount).to.equal(400, "The second staking should be 400");
   });
@@ -124,11 +124,100 @@ describe("Stakeable_2", () => {
   });
 
   it("remove stake if empty", async () => {
-   // go on there
+    // empty the first stake 
+    await fiveToken.withdrawStake(ethers.parseEther("400"), 0);
+    const summary = await fiveToken.hasStake(deployer);
+    const totalStake = parseInt(ethers.formatEther(summary.total_amount));
+    expect(totalStake).to.equal(400, "The total staking should be 400");
+    expect(summary.stakes[0].user).to.equal(zeroAddress, "Failed to remove stake when it was empty")
   });
 
+  // [N] some test has an offset of 1 second, adding a 2 seconds tolerance 
+  it("check advanceTimeAndBlock function", async () => {
+    const blok = await ethers.provider.getBlock("latest");
+    const blokPlus20 = await advanceTimeAndBlock(3600*20);
 
+    expect(blok).to.not.be.null;
+    expect(blokPlus20).to.not.be.null;
+    expect(blokPlus20!.timestamp).to.be.closeTo(blok!.timestamp + 3600*20, 2, "advanceTimeAndBlock function failed");
+  });
 
+  it("calculate claimable rewards", async () => {
+    // wait 20 hours
+    const blokPlus20 = await advanceTimeAndBlock(3600*20);
+    expect(blokPlus20).to.not.be.null;
 
+    let summary = await fiveToken.hasStake(deployer);
+    let stake0 = summary.stakes[0];
+    let claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    expect(claimable0).to.equal(400 * 0.01 * 2, "Claimable Reward should be 8 after staking for twenty hours with 400");
+
+    // new stack of 10000, then wait 20 more hours
+    await fiveToken.stake(ethers.parseEther("10000"));
+    await advanceTimeAndBlock(3600*20);
+
+    summary = await fiveToken.hasStake(deployer);
+    stake0 = summary.stakes[0];
+    claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    const stake2 = summary.stakes[2];
+    const claimable2 = parseFloat(ethers.formatEther(stake2.claimable));
+
+    expect(claimable0).to.equal(400 * 0.01 * 4, "Claimable Reward should be 16 after staking for fourty hours with 400");
+    expect(claimable2).to.equal(10000 * 0.01 * 2, "Claimable Reward should be 200 after staking for twenty hours with 10 000");
+  });
+
+  it("withdraw the claimable reward", async () => {
+    // start with balance of 5000, stack 1000
+    let balance1 = parseInt(ethers.formatEther(await fiveToken.balanceOf(addr1)));
+    expect(balance1).to.equal(5000, "Addr1 must start this test with a balance of 5000");
+
+    await fiveToken.connect(addr1).stake(ethers.parseEther("1000"));
+    let summary = await fiveToken.hasStake(addr1);
+    let summaryAmount = parseInt(ethers.formatEther(summary.total_amount))
+    let stake0 = summary.stakes[0];
+    let claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    balance1 = parseInt(ethers.formatEther(await fiveToken.balanceOf(addr1)));
+    expect(summaryAmount).to.equal(1000, "Staked value should be 1000");
+    expect(balance1).to.equal(4000, "balance should be 4000 after staking 1000");
+    expect(claimable0).to.equal(0, "claimable reward should be 0 after at stake time");
+
+    // wait 20 hours
+    await advanceTimeAndBlock(3600*20);
+
+    summary = await fiveToken.hasStake(addr1);
+    summaryAmount = parseInt(ethers.formatEther(summary.total_amount))
+    stake0 = summary.stakes[0];
+    claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    balance1 = parseInt(ethers.formatEther(await fiveToken.balanceOf(addr1)));
+    expect(summaryAmount).to.equal(1000, "Staked value should be still 1000");
+    expect(balance1).to.equal(4000, "balance should still be 4000");
+    expect(claimable0).to.equal(1000 * 0.01 * 2, "claimable reward should be 20 after 20h");
+
+    // withdraw 200 from stack (automatically withdraw the claimable with)
+    await fiveToken.connect(addr1).withdrawStake(ethers.parseEther("200"), 0);
+
+    summary = await fiveToken.hasStake(addr1);
+    summaryAmount = parseInt(ethers.formatEther(summary.total_amount))
+    stake0 = summary.stakes[0];
+    claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    balance1 = parseInt(ethers.formatEther(await fiveToken.balanceOf(addr1)));
+
+    const expectedBalance = 4000 + 200 + 20; // balance + withdraw + claimable
+    expect(balance1).to.equal(expectedBalance, "balance should be 4220 after withdraw stake");
+    expect(claimable0).to.equal(0, "claimable value should be reset after the withdraw");
+
+    // withdraw 200 again should not add claimable 
+    await expect(fiveToken.connect(addr1).withdrawStake(ethers.parseEther("200"), 0))
+      .to.not.be.reverted;
+
+    summary = await fiveToken.hasStake(addr1);
+    summaryAmount = parseInt(ethers.formatEther(summary.total_amount))
+    stake0 = summary.stakes[0];
+    claimable0 = parseFloat(ethers.formatEther(stake0.claimable));
+    balance1 = parseInt(ethers.formatEther(await fiveToken.balanceOf(addr1)));
+    expect(summaryAmount).to.equal(1000 - 200 * 2, "Staked value should be now 600");
+    expect(balance1).to.equal(4000 + 200 + 20 +200, "balance should be 4440");
+    expect(claimable0).to.equal(0, "claimable value should be reset after the withdraw");
+  });
 
 });

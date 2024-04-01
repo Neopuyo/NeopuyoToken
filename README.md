@@ -51,7 +51,7 @@ Currency symbol:| tBNB
 Block explorer URL:| https://testnet.bscscan.com
 
 To ask tBNB: [https://testnet.binance.org/faucet-smart](https://testnet.binance.org/faucet-smart)
-  
+All Bsc RPC [here](https://docs.bnbchain.org/docs/BSCtestnet/)
 *see [howToDeployNeopuyo42Token](./deploy/howToDeployNeopuyo42Token.md) for further details*
 
 <br/>
