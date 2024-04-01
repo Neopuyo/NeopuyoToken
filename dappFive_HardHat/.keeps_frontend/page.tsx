@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export interface AccountType {
+interface AccountType {
   address?: string;
   balance?: string;
   chainId?: string;

@@ -5,8 +5,12 @@ import {mnemonic, bscscanApiKey} from './secrets.json';
 const config: HardhatUserConfig = {
   solidity: "0.8.24",
   networks: {
+    local: {
+      // url: "http://127.0.0.1:8545",
+      url: "10.249.1.201:8545", // Nuc Home
+    },
     testnet: {
-      url: "https://data-seed-prebsc-2-s2.bnbchain.org:8545",
+      url: "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
       chainId: 97,
       gasPrice: 20000000000,
       accounts: {mnemonic: mnemonic}

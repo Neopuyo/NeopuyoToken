@@ -2,5 +2,5 @@
 // The contract address deployed on Bsc tesnet
 // https://testnet.bscscan.com
 export function getFiveTokenContractAddress(): string {
-  return "0x54545545454";
+  return "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 }

@@ -1,4 +1,4 @@
-import { AccountType } from "@/page";
+import { AccountType } from "@/pages";
 
 interface HeaderProps extends AccountType {}
 
