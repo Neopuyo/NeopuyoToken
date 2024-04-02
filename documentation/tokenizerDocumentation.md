@@ -257,7 +257,23 @@ Play around with fake money and get familiar with the wallet.
 lets use NexjJS too and link Metamask types with typescript ([Connecting to MetaMask with Next.js and Typescript](https://medium.com/@mansour-qaderi/connecting-to-metamask-with-next-js-and-typescript-63a294144443))
 
 
-FIXES NOTES
+
+
+
+
+#### **HARDHAT local Deployement**  
+\- 🔳 **A** > `npx hardhat node`  
+&emsp; *launch hardhat local network*  
+\- 🔳 **B** > `npx hardhat run --network localhost scripts/deploy.js`  
+&emsp; *will see logs on other console A*  
+&emsp; *check contract with npx hardhat [clean/compile/test] sequence before*  
+\- **Frontend** -> `provider = new ethers.JsonRpcProvider('http://localhost:8545');`  
+&emsp; *Don't forget open port 8545 in Docker*  
+&emsp; *go check http://localhost:8545 will see : Parse error: Unexpected end of JSON input*  
+
+
+
+#### FIXES NOTES
 
 GANACHE DESKTOP RPC with dockerized contract  
 Ganache deprecated -> check red hat now
@@ -334,8 +350,8 @@ Le tuto utilise un methode deprecated, mettre à jour en remplaçant, [doc](http
 | **ownership**                        | propriété                          |
 | **underlying**                       | sous-jacent                        |
 | **a stake in a company**             | une part dans une entreprise       |
-| **recipient**                        | destinataire                       |
 | **stake**                            | un enjeu / mettre en jeu           |
+| **recipient**                        | destinataire                       |
 
 
 ---

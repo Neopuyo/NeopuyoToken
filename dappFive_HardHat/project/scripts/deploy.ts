@@ -1,6 +1,11 @@
 import { ethers } from "hardhat";
 
 async function main() {
+
+  // Récupère l'adresse du compte à utiliser pour le déploiement
+  const [deployer] = await ethers.getSigners();
+  console.log("Checking ethers.getSigners() : ", deployer.address);
+
   //defining our contract, need Factory to pass arguments
   const FiveToken = await ethers.getContractFactory("FiveToken");
   const fiveToken = await FiveToken.deploy("FiveToken", "FIVE", 18,  5000000000); 

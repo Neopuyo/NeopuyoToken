@@ -1,117 +1,254 @@
 "use client"
 
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { Header } from "@/components/header";
 import { ethers } from "ethers";
+import { getFiveTokenContractAddress } from "./tools/getFiveTokenAddress";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export interface AccountType {
-  address?: string;
-  balance?: string;
-  chainId?: string;
-  network?: string;
+interface MetamaskData {
+  accounts: string[];
+  totalSupply: string;
+  accountBalance: string;
+  accountTotalStake: string;
+  fiveContract: ethers.Contract | null;
+  signer: ethers.Signer | null;
+
+  provider: ethers.JsonRpcProvider | null; // testnet
+  // provider: ethers.BrowserProvider | null; // local hardhat or BAD TRY ;(
 }
 
 export default function Home() {
 
-  const [accountData, setAccountData] = useState<AccountType>({});
-  const [message, setMessage] = useState<string>("");
+  const [meta, setMeta] = useState<MetamaskData>({
+    accounts: [],
+    totalSupply: "0",
+    accountBalance: "0",
+    accountTotalStake: "0",
+    fiveContract: null,
+    signer: null,
+    provider: null,
+  });
 
-
-  const _connectToMetaMask= useCallback(async () => {
-    const ethereum = window.ethereum;
-    // Check if MetaMask is installed
-    if (typeof ethereum !== "undefined") {
-      try {
-        // Request access to the user's MetaMask accounts
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        // Get the connected Ethereum address
-        const address = accounts[0];
-        // Check address in console of web browser
-        console.log("connected to MetaMask with address: ", address);
-
-        // Create an ethers.js provider using the injected provider from MetaMask
-        const provider = new ethers.BrowserProvider(ethereum);
-        // Get the account balance
-        const balance = await provider.getBalance(address);
-        // Get the network ID from MetaMask
-        const network = await provider.getNetwork();
-        // Update state with the results
-        setAccountData({
-          address,
-          balance: ethers.formatEther(balance),
-          // The chainId property is a bigint, change to a string
-          chainId: network.chainId.toString(),
-          network: network.name,
-        });
-      } catch (error: Error | any) {
-        alert(`Error connecting to MetaMask: ${error?.message ?? error}`);
-      }
-    } else {
-      alert("MetaMask not installed");
-    }
+  useEffect(() => {
+    connectWallet();
   }, []);
 
-  const _sendMessageToMetaMask = useCallback(async () => {
-    const ethereum = await window.ethereum;
-    // Create an ethers.js provider using the injected provider from MetaMask
-    // And get the signer (account) from the provider
-    const signer = await new ethers.BrowserProvider(ethereum).getSigner();
-    try {
-      // Sign the message
-      await signer.signMessage(message);
-    } catch (error) {
-      alert("User denied message signature.");
+  useEffect(() => {
+    if (isMetamaskConnected()) {
+      console.log("OK METAMASK CONNECTED");
+      console.log("Accounts = ", meta.accounts);
+      getWalletInfos();
     }
-  }, [message]);
+  }, [meta.fiveContract]);
 
-  const _onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
+  async function connectWallet() {
+    try {
+      if (window.ethereum) {
+        const accountsStamp = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+        setMeta((prevState) => ({ ...prevState, accounts: accountsStamp }));
 
+        // console.log("Accounts = ", meta.accounts);
+
+        // const providerStamp = new ethers.JsonRpcProvider(); // for testnet
+        const providerStamp = new ethers.JsonRpcProvider('http://localhost:8545'); // for local hardhat
+        
+        // [K] false try usign api to fix cross-origin issue
+        // const providerStamp = new ethers.JsonRpcProvider("api/ethereum", 
+          // {
+          //   chainId: 31337, // Chaîne d'identification du réseau Hardhat
+          //   name: 'hardhat', // Nom du réseau Hardhat
+          // }
+        // ); // for localnode hardhat
+
+
+        const signerStamp = await providerStamp.getSigner();
+        console.log("signer = ", signerStamp);
+        setMeta((prevState) => ({ ...prevState, signer: signerStamp, provider: providerStamp }));
+
+        const abi = await getABI();
+        const address = getFiveTokenContractAddress();
+        const contractStamp = new ethers.Contract(address, abi, providerStamp);
+        setMeta((prevState) => ({ ...prevState, fiveContract: contractStamp }));
+      } else {
+        console.error('MetaMask is needed to use this dapp.');
+      }
+    } catch (error) {
+      console.log("connectWallet Error : ", (error as Error).message);
+    }
+  }
+
+  // useEffect(() => {
+  //   if (state.fiveContract) {
+  //     const stakeListener = createStakeListener(state.fiveContract);
+  //     return () => {
+  //       if (stakeListener && stakeListener.removeListener) {
+  //         stakeListener.removeListener();
+  //       }
+  //     };
+  //   }
+  // }, [state.fiveContract]);
+
+  // async function createStakeListener(contract: ethers.Contract) {
+  //   const stakeListener = contract.on("Staked", async (stakerRaw: string, amount: BigNumber) => {
+  //     console.log("Staked event : ", stakerRaw, amount.toString());
+  //     const staker = ethers.getAddress(stakerRaw).toLowerCase();
+  //     console.log("StakerRaw: ", stakerRaw, " => ", staker);
+  //     if (staker === state.accounts[0]) {
+  //       console.log("Staked event from current user");
+  //     }
+  //     await getWalletInfos();
+  //   });
+  //   return stakeListener;
+  // }
+
+  function isMetamaskConnected() {
+    return (
+      typeof meta.fiveContract !== "undefined" &&
+      typeof meta.accounts[0] !== "undefined"
+    );
+  }
+
+  async function getWalletInfos() {
+    try {
+      if (window.ethereum) {
+
+        // TEST
+        // const contract = new ethers.Contract(
+        //   getFiveTokenContractAddress(),
+        //   meta.fiveContract!.interface,
+        //   meta.signer
+        // );
+  
+        // // Appelez la méthode totalSupply() sur l'instance du contrat connectée au signataire
+        // const totalSupply2 = await contract.totalSupply();
+        // console.log("totalSupply2 = ", totalSupply2);
+
+        await meta.fiveContract!.totalSupply().then((rawValue) => {
+          const formatedValue = ethers.formatEther(rawValue);
+          console.log("totalSupply = ",rawValue, " => ", formatedValue);
+        })
+
+
+        // const totalSupply = await meta.fiveContract!.totalSupply();
+        // console.log("totalSupply = ", totalSupply);
+        // const formattedTotalSupply = ethers.formatEther(totalSupply);
+        // console.log("totalSupply = ", totalSupply, " => ", formattedTotalSupply);
+        // setMeta((prevState) => ({ ...prevState, totalSupply: formattedTotalSupply }));
+
+        // const accountBalance = await meta.fiveContract!.balanceOf(meta.accounts[0]);
+        // const formattedAccountBalance = ethers.formatEther(accountBalance);
+        // console.log("accountBalance = ", accountBalance, " => ", formattedAccountBalance);
+        // setMeta((prevState) => ({ ...prevState, accountBalance: formattedAccountBalance }));
+
+        // const stackingSummary = await meta.fiveContract!.hasStake(meta.accounts[0]);
+        // const formattedAccountTotalStake = ethers.formatEther(stackingSummary.total_amount);
+        // console.log("stackingSummary.total_amount = ", stackingSummary.total_amount, " => ", formattedAccountTotalStake);
+        // setMeta((prevState) => ({ ...prevState, accountTotalStake: formattedAccountTotalStake }));
+      } else {
+        throw new Error("Can't getWalletInfos from Metamask.");
+      }
+    } catch (error) {
+      console.log("getWalletInfos Error : ", (error as Error).message);
+    }
+  }
+
+  // async function stakeFiveTokens() {
+  //   try {
+  //     const amount = 1472;
+  //     const abi = await getABI();
+  //     const address = getFiveTokenContractAddress();
+  //     const contractS = new ethers.Contract(address, abi, state.signer);
+  //     const amountParsed = ethers.parseEther(amount.toString());
+
+  //     const gasEstimate = await contractS.stake.estimateGas(amountParsed);
+  //     const gasPrice = (await state.provider!.getFeeData()).gasPrice;
+
+  //     console.log("gasPrice : ", gasPrice);
+  //     console.log("gasEstimate : ", gasEstimate);
+
+  //     const gasCost = gasEstimate.mul(gasPrice);
+  //     const gasCostInEth = ethers.formatEther(gasCost);
+  //     console.log("gasCost : ", gasCost);
+
+  //     console.log("Gas cost: ", gasCostInEth, " Ether");
+
+  //     const confirmed = await window.ethereum.request({
+  //       method: "eth_sendTransaction",
+  //       params: [
+  //         {
+  //           to: address,
+  //           from: await state.signer!.getAddress(),
+  //           value: "0x0",
+  //           gas: gasEstimate.toString(),
+  //           gasPrice: gasPrice.toString(),
+  //           data: contractS.interface.encodeFunctionData("stake", [amountParsed]),
+  //         },
+  //       ],
+  //     });
+
+  //     if (!confirmed) {
+  //       console.log("Transaction canceled.");
+  //       return;
+  //     }
+
+  //     console.log("Transaction validate, waiting for process...");
+
+  //     const receipt = await state.provider!.waitForTransaction(confirmed);
+  //     console.log("Stake transaction Done receipt : ", receipt);
+  //   } catch (error) {
+  //     console.log("stakeFiveTokens Error : ", error.message);
+  //   }
+  // }
+
+  async function getABI(): Promise<any[]> {
+    let ABI: any[] = [];
+
+    await fetch("./abi/FiveToken.json", {
+      headers : {
+        'Accept': 'application.json',
+        'Content-Type': 'application.json',
+      }
+    }).then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error('Error fetching ABI (FiveToken.json)');
+      }
+    }).then((data) => {
+      ABI = data.abi;
+    }).catch((error) => {
+      throw new Error(error);
+    });
+
+    if (Array.isArray(ABI) && ABI.length > 0) {
+      return ABI;
+    } else {
+      throw new Error('Invalid ABI format.');
+    }
+  }
+
+  // for later : onClick={stakeFiveTokens}
   return (
-    <div
-      className={`h-full flex flex-col before:from-white after:from-sky-200 py-2 ${inter.className}`}
-    >
-      <Header {...accountData} />
+    <div  className={`h-full flex flex-col before:from-white after:from-sky-200 py-2 `}>
+      <header className="App-header">
+        <h1> Welcome to your DAPP application</h1>
+      </header>
       <div className="flex flex-col flex-1 justify-center items-center">
-        <div className="grid gap-4">
-          <Image
-            src="https://images.ctfassets.net/9sy2a0egs6zh/4zJfzJbG3kTDSk5Wo4RJI1/1b363263141cf629b28155e2625b56c9/mm-logo.svg"
-            alt="MetaMask"
-            width={320}
-            height={140}
-            priority
-          />
-          {accountData?.address ? (
-            <>
-              <input
-                type="text"
-                onChange={_onChange}
-                className="border-black border-2 rounded-lg p-2"
-              />
-              <button
-                onClick={_sendMessageToMetaMask}
-                className="bg-black text-white p-4 rounded-lg"
-              >
-                Send Message
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={_connectToMetaMask}
-              className="bg-black text-white p-4 rounded-lg"
-            >
-              Connect to MetaMask
-            </button>
-          )}
+      <div className="grid gap-4">
+        <p> Account : {meta.accounts[0]}</p>
+        {meta.totalSupply === "0" && <p>FiveToken total supply: 0</p>}
+        {meta.totalSupply !== "0" && <p>FiveToken total supply: {meta.totalSupply} Five</p>}
+        <p> Your FiveToken balance: {meta.accountBalance} Five</p>
+        <p> Your FiveToken stack: {meta.accountTotalStake} Five</p>
+        <button className="bg-black text-white p-4 rounded-lg"><p>Stake</p></button>
         </div>
       </div>
     </div>
   );
-}
+};
