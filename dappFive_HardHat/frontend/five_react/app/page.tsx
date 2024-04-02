@@ -9,6 +9,10 @@ import { getFiveTokenContractAddress } from "./tools/getFiveTokenAddress";
 
 const inter = Inter({ subsets: ["latin"] });
 
+type ContractWithRemoveListener = ethers.Contract & {
+  removeListener: () => void;
+};
+
 interface MetamaskData {
   accounts: string[];
   totalSupply: string;
@@ -53,20 +57,9 @@ export default function Home() {
         });
         setMeta((prevState) => ({ ...prevState, accounts: accountsStamp }));
 
-        // console.log("Accounts = ", meta.accounts);
-
         // const providerStamp = new ethers.JsonRpcProvider(); // for testnet
         const providerStamp = new ethers.JsonRpcProvider('http://localhost:8545'); // for local hardhat
         
-        // [K] false try usign api to fix cross-origin issue
-        // const providerStamp = new ethers.JsonRpcProvider("api/ethereum", 
-          // {
-          //   chainId: 31337, // Chaîne d'identification du réseau Hardhat
-          //   name: 'hardhat', // Nom du réseau Hardhat
-          // }
-        // ); // for localnode hardhat
-
-
         const signerStamp = await providerStamp.getSigner();
         console.log("signer = ", signerStamp);
         setMeta((prevState) => ({ ...prevState, signer: signerStamp, provider: providerStamp }));
@@ -83,29 +76,33 @@ export default function Home() {
     }
   }
 
-  // useEffect(() => {
-  //   if (state.fiveContract) {
-  //     const stakeListener = createStakeListener(state.fiveContract);
-  //     return () => {
-  //       if (stakeListener && stakeListener.removeListener) {
-  //         stakeListener.removeListener();
-  //       }
-  //     };
-  //   }
-  // }, [state.fiveContract]);
+  useEffect(() => {
+    async function rmStakeListener() {
+       await meta.fiveContract?.removeAllListeners("Staked");
+    }
+    if (meta.fiveContract) {
+      createStakeListener();
+      return () => {
+        rmStakeListener();
+      };
+    }
+  }, [meta.fiveContract]);
 
-  // async function createStakeListener(contract: ethers.Contract) {
-  //   const stakeListener = contract.on("Staked", async (stakerRaw: string, amount: BigNumber) => {
-  //     console.log("Staked event : ", stakerRaw, amount.toString());
-  //     const staker = ethers.getAddress(stakerRaw).toLowerCase();
-  //     console.log("StakerRaw: ", stakerRaw, " => ", staker);
-  //     if (staker === state.accounts[0]) {
-  //       console.log("Staked event from current user");
-  //     }
-  //     await getWalletInfos();
-  //   });
-  //   return stakeListener;
-  // }
+  async function createStakeListener() {
+    try {
+      meta.fiveContract!.on("Staked", async (stakerRaw: string, amount: any) => {
+        console.log("Staked event : ", stakerRaw, amount.toString());
+        const staker = ethers.getAddress(stakerRaw).toLowerCase();
+        console.log("StakerRaw: ", stakerRaw, " => ", staker);
+        if (staker === meta.accounts[0]) {
+          console.log("Staked event from current user");
+        }
+        await getWalletInfos();
+      });
+    } catch (error) {
+      console.error("Error listener:", (error as Error).message);
+    }
+  }
 
   function isMetamaskConnected() {
     return (
@@ -117,39 +114,23 @@ export default function Home() {
   async function getWalletInfos() {
     try {
       if (window.ethereum) {
-
-        // TEST
-        // const contract = new ethers.Contract(
-        //   getFiveTokenContractAddress(),
-        //   meta.fiveContract!.interface,
-        //   meta.signer
-        // );
-  
-        // // Appelez la méthode totalSupply() sur l'instance du contrat connectée au signataire
-        // const totalSupply2 = await contract.totalSupply();
-        // console.log("totalSupply2 = ", totalSupply2);
-
         await meta.fiveContract!.totalSupply().then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
-          console.log("totalSupply = ",rawValue, " => ", formatedValue);
-        })
+          console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
+          setMeta((prevState) => ({ ...prevState, totalSupply: formatedValue }));
+        });
 
+      await meta.fiveContract!.balanceOf(meta.accounts[0]).then((rawValue) => {
+        const formatedValue = ethers.formatEther(rawValue);
+        console.log("accountBalance = ",rawValue, " => ", formatedValue); // [!] debug
+        setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
+      });
 
-        // const totalSupply = await meta.fiveContract!.totalSupply();
-        // console.log("totalSupply = ", totalSupply);
-        // const formattedTotalSupply = ethers.formatEther(totalSupply);
-        // console.log("totalSupply = ", totalSupply, " => ", formattedTotalSupply);
-        // setMeta((prevState) => ({ ...prevState, totalSupply: formattedTotalSupply }));
-
-        // const accountBalance = await meta.fiveContract!.balanceOf(meta.accounts[0]);
-        // const formattedAccountBalance = ethers.formatEther(accountBalance);
-        // console.log("accountBalance = ", accountBalance, " => ", formattedAccountBalance);
-        // setMeta((prevState) => ({ ...prevState, accountBalance: formattedAccountBalance }));
-
-        // const stackingSummary = await meta.fiveContract!.hasStake(meta.accounts[0]);
-        // const formattedAccountTotalStake = ethers.formatEther(stackingSummary.total_amount);
-        // console.log("stackingSummary.total_amount = ", stackingSummary.total_amount, " => ", formattedAccountTotalStake);
-        // setMeta((prevState) => ({ ...prevState, accountTotalStake: formattedAccountTotalStake }));
+      await meta.fiveContract!.hasStake(meta.accounts[0]).then((stackingSummary) => {
+        const formatedValue = ethers.formatEther(stackingSummary.total_amount);
+        console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
+        setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
+      });
       } else {
         throw new Error("Can't getWalletInfos from Metamask.");
       }
@@ -158,53 +139,54 @@ export default function Home() {
     }
   }
 
-  // async function stakeFiveTokens() {
-  //   try {
-  //     const amount = 1472;
-  //     const abi = await getABI();
-  //     const address = getFiveTokenContractAddress();
-  //     const contractS = new ethers.Contract(address, abi, state.signer);
-  //     const amountParsed = ethers.parseEther(amount.toString());
+  async function stakeFiveTokens() {
+    try {
+      const amount = 1472;
+      const abi = await getABI();
+      const address = getFiveTokenContractAddress();
+      const contractS = new ethers.Contract(address, abi, meta.signer);
+      const amountParsed = ethers.parseEther(amount.toString());
+      
+      // Estimate gas cost and ask confirmation
+      const gasEstimate = await contractS.stake.estimateGas(amountParsed);
+      const gasPrice = (await meta.provider!.getFeeData()).gasPrice;
 
-  //     const gasEstimate = await contractS.stake.estimateGas(amountParsed);
-  //     const gasPrice = (await state.provider!.getFeeData()).gasPrice;
+      console.log("gasPrice : ", gasPrice);
+      console.log("gasEstimate : ", gasEstimate);
 
-  //     console.log("gasPrice : ", gasPrice);
-  //     console.log("gasEstimate : ", gasEstimate);
+      const gasCost = gasEstimate * gasPrice!; // [!] care unwrapping
+      const gasCostInEth = ethers.formatEther(gasCost);
+      console.log("gasCost : ", gasCost);
 
-  //     const gasCost = gasEstimate.mul(gasPrice);
-  //     const gasCostInEth = ethers.formatEther(gasCost);
-  //     console.log("gasCost : ", gasCost);
+      console.log("Gas cost: ", gasCostInEth, " Ether");
 
-  //     console.log("Gas cost: ", gasCostInEth, " Ether");
+      const confirmed = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            to: address,
+            from: await meta.signer!.getAddress(),
+            value: "0x0",
+            gas: gasEstimate.toString(),
+            gasPrice: gasPrice?.toString(),
+            data: contractS.interface.encodeFunctionData("stake", [amountParsed]),
+          },
+        ],
+      });
 
-  //     const confirmed = await window.ethereum.request({
-  //       method: "eth_sendTransaction",
-  //       params: [
-  //         {
-  //           to: address,
-  //           from: await state.signer!.getAddress(),
-  //           value: "0x0",
-  //           gas: gasEstimate.toString(),
-  //           gasPrice: gasPrice.toString(),
-  //           data: contractS.interface.encodeFunctionData("stake", [amountParsed]),
-  //         },
-  //       ],
-  //     });
+      if (!confirmed) {
+        console.log("Transaction canceled.");
+        return;
+      }
 
-  //     if (!confirmed) {
-  //       console.log("Transaction canceled.");
-  //       return;
-  //     }
+      console.log("Transaction validate, waiting for process...");
 
-  //     console.log("Transaction validate, waiting for process...");
-
-  //     const receipt = await state.provider!.waitForTransaction(confirmed);
-  //     console.log("Stake transaction Done receipt : ", receipt);
-  //   } catch (error) {
-  //     console.log("stakeFiveTokens Error : ", error.message);
-  //   }
-  // }
+      const receipt = await meta.provider!.waitForTransaction(confirmed);
+      console.log("Stake transaction Done receipt : ", receipt);
+    } catch (error) {
+      console.log("stakeFiveTokens Error : ", (error as Error).message);
+    }
+  }
 
   async function getABI(): Promise<any[]> {
     let ABI: any[] = [];
@@ -246,7 +228,7 @@ export default function Home() {
         {meta.totalSupply !== "0" && <p>FiveToken total supply: {meta.totalSupply} Five</p>}
         <p> Your FiveToken balance: {meta.accountBalance} Five</p>
         <p> Your FiveToken stack: {meta.accountTotalStake} Five</p>
-        <button className="bg-black text-white p-4 rounded-lg"><p>Stake</p></button>
+        <button className="bg-black text-white p-4 rounded-lg" onClick={stakeFiveTokens}><p>Stake</p></button>
         </div>
       </div>
     </div>
