@@ -1,29 +1,21 @@
 "use client"
 
-import React, { useCallback, useEffect, useState } from "react"
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { Header } from "@/components/header";
+import React, { useEffect, useState } from "react"
 import { ethers } from "ethers";
-import { getFiveTokenContractAddress } from "./tools/getFiveTokenAddress";
+import { getNeopuyo42ContractAddress } from "./tools/getNeopuyo42Address";
 
-const inter = Inter({ subsets: ["latin"] });
-
-type ContractWithRemoveListener = ethers.Contract & {
-  removeListener: () => void;
-};
 
 interface MetamaskData {
   accounts: string[];
   totalSupply: string;
   accountBalance: string;
   accountTotalStake: string;
-  fiveContract: ethers.Contract | null;
+  neopuyo42Contract: ethers.Contract | null;
   signer: ethers.Signer | null;
-
-  provider: ethers.JsonRpcProvider | null; // testnet
-  // provider: ethers.BrowserProvider | null; // local hardhat or BAD TRY ;(
+  provider: ethers.JsonRpcProvider | null;
 }
+
+const BSC_CHAIN_ID = '97';
 
 export default function Home() {
 
@@ -32,7 +24,7 @@ export default function Home() {
     totalSupply: "0",
     accountBalance: "0",
     accountTotalStake: "0",
-    fiveContract: null,
+    neopuyo42Contract: null,
     signer: null,
     provider: null,
   });
@@ -47,7 +39,7 @@ export default function Home() {
       console.log("Accounts = ", meta.accounts);
       getWalletInfos();
     }
-  }, [meta.fiveContract]);
+  }, [meta.neopuyo42Contract]);
 
   async function connectWallet() {
     try {
@@ -56,18 +48,22 @@ export default function Home() {
           method: 'eth_requestAccounts',
         });
         setMeta((prevState) => ({ ...prevState, accounts: accountsStamp }));
+        console.log("accounts[0] = ", accountsStamp[0]);
+        _checkNetwork();
 
-        // const providerStamp = new ethers.JsonRpcProvider(); // for testnet
-        const providerStamp = new ethers.JsonRpcProvider('http://localhost:8545'); // for local hardhat
+        const providerStamp = new ethers.JsonRpcProvider("https://data-seed-prebsc-1-s1.bnbchain.org:8545"); // for testnet
+        // const providerStamp = new ethers.JsonRpcProvider('http://localhost:8545'); // for local hardhat
         
-        const signerStamp = await providerStamp.getSigner();
-        console.log("signer = ", signerStamp);
-        setMeta((prevState) => ({ ...prevState, signer: signerStamp, provider: providerStamp }));
+        console.log("providerStamp = ", providerStamp);
 
-        const abi = await getABI();
-        const address = getFiveTokenContractAddress();
-        const contractStamp = new ethers.Contract(address, abi, providerStamp);
-        setMeta((prevState) => ({ ...prevState, fiveContract: contractStamp }));
+        // const signerStamp = await providerStamp.getSigner();
+        // console.log("signer = ", signerStamp);
+        // setMeta((prevState) => ({ ...prevState, signer: signerStamp, provider: providerStamp }));
+
+        // const abi = await getABI();
+        // const address = getNeopuyo42ContractAddress();
+        // const contractStamp = new ethers.Contract(address, abi, providerStamp);
+        // setMeta((prevState) => ({ ...prevState, neo3133puyo42Contract: contractStamp }));
       } else {
         console.error('MetaMask is needed to use this dapp.');
       }
@@ -78,19 +74,41 @@ export default function Home() {
 
   useEffect(() => {
     async function rmStakeListener() {
-       await meta.fiveContract?.removeAllListeners("Staked");
+       await meta.neopuyo42Contract?.removeAllListeners("Staked");
     }
-    if (meta.fiveContract) {
+    if (meta.neopuyo42Contract) {
       createStakeListener();
       return () => {
         rmStakeListener();
       };
     }
-  }, [meta.fiveContract]);
+  }, [meta.neopuyo42Contract]);
+
+  async function _checkNetwork() {
+    const networkID = await window.ethereum.request({
+      method: 'net_version',
+    });
+    if (networkID !== BSC_CHAIN_ID) {
+      console.log("Wrong networkID : ", networkID, "Ask switching...");
+      _switchChain();
+    }
+
+    
+  }
+
+  async function _switchChain() {
+    const chainIdHex = `0x${parseInt(BSC_CHAIN_ID).toString(16)}`; // [!] const chainIdHex = `0x${HARDHAT_NETWORK_ID.toString(16)}` in boilerplate
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chainIdHex }],
+    });
+    // go to next initialize etc...
+  }
+
 
   async function createStakeListener() {
     try {
-      meta.fiveContract!.on("Staked", async (stakerRaw: string, amount: any) => {
+      meta.neopuyo42Contract!.on("Staked", async (stakerRaw: string, amount: any) => {
         console.log("Staked event : ", stakerRaw, amount.toString());
         const staker = ethers.getAddress(stakerRaw).toLowerCase();
         console.log("StakerRaw: ", stakerRaw, " => ", staker);
@@ -106,7 +124,7 @@ export default function Home() {
 
   function isMetamaskConnected() {
     return (
-      typeof meta.fiveContract !== "undefined" &&
+      typeof meta.neopuyo42Contract !== "undefined" &&
       typeof meta.accounts[0] !== "undefined"
     );
   }
@@ -114,19 +132,19 @@ export default function Home() {
   async function getWalletInfos() {
     try {
       if (window.ethereum) {
-        await meta.fiveContract!.totalSupply().then((rawValue) => {
+        await meta.neopuyo42Contract!.totalSupply().then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
           console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
           setMeta((prevState) => ({ ...prevState, totalSupply: formatedValue }));
         });
 
-      await meta.fiveContract!.balanceOf(meta.accounts[0]).then((rawValue) => {
+      await meta.neopuyo42Contract!.balanceOf(meta.accounts[0]).then((rawValue) => {
         const formatedValue = ethers.formatEther(rawValue);
         console.log("accountBalance = ",rawValue, " => ", formatedValue); // [!] debug
         setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
       });
 
-      await meta.fiveContract!.hasStake(meta.accounts[0]).then((stackingSummary) => {
+      await meta.neopuyo42Contract!.hasStake(meta.accounts[0]).then((stackingSummary) => {
         const formatedValue = ethers.formatEther(stackingSummary.total_amount);
         console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
         setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
@@ -139,11 +157,11 @@ export default function Home() {
     }
   }
 
-  async function stakeFiveTokens() {
+  async function stakeNeopuyo42() {
     try {
       const amount = 1472;
       const abi = await getABI();
-      const address = getFiveTokenContractAddress();
+      const address = getNeopuyo42ContractAddress();
       const contractS = new ethers.Contract(address, abi, meta.signer);
       const amountParsed = ethers.parseEther(amount.toString());
       
@@ -184,14 +202,14 @@ export default function Home() {
       const receipt = await meta.provider!.waitForTransaction(confirmed);
       console.log("Stake transaction Done receipt : ", receipt);
     } catch (error) {
-      console.log("stakeFiveTokens Error : ", (error as Error).message);
+      console.log("stakeNeopuyo42 Error : ", (error as Error).message);
     }
   }
 
   async function getABI(): Promise<any[]> {
     let ABI: any[] = [];
 
-    await fetch("./abi/FiveToken.json", {
+    await fetch("./abi/Neopuyo42.json", {
       headers : {
         'Accept': 'application.json',
         'Content-Type': 'application.json',
@@ -200,7 +218,7 @@ export default function Home() {
       if (response.status === 200) {
         return response.json();
       } else {
-        throw new Error('Error fetching ABI (FiveToken.json)');
+        throw new Error('Error fetching ABI (Neopuyo42.json)');
       }
     }).then((data) => {
       ABI = data.abi;
@@ -215,7 +233,7 @@ export default function Home() {
     }
   }
 
-  // for later : onClick={stakeFiveTokens}
+  // for later : onClick={stakeNeopuyo42}
   return (
     <div  className={`h-full flex flex-col before:from-white after:from-sky-200 py-2 `}>
       <header className="App-header">
@@ -224,11 +242,11 @@ export default function Home() {
       <div className="flex flex-col flex-1 justify-center items-center">
       <div className="grid gap-4">
         <p> Account : {meta.accounts[0]}</p>
-        {meta.totalSupply === "0" && <p>FiveToken total supply: 0</p>}
-        {meta.totalSupply !== "0" && <p>FiveToken total supply: {meta.totalSupply} Five</p>}
-        <p> Your FiveToken balance: {meta.accountBalance} Five</p>
-        <p> Your FiveToken stack: {meta.accountTotalStake} Five</p>
-        <button className="bg-black text-white p-4 rounded-lg" onClick={stakeFiveTokens}><p>Stake</p></button>
+        {meta.totalSupply === "0" && <p>Neopuyo42 total supply: 0</p>}
+        {meta.totalSupply !== "0" && <p>Neopuyo42 total supply: {meta.totalSupply} Neo</p>}
+        <p> Your Neopuyo42 balance: {meta.accountBalance} Neo</p>
+        <p> Your Neopuyo42 stack: {meta.accountTotalStake} Neo</p>
+        <button className="bg-black text-white p-4 rounded-lg" onClick={stakeNeopuyo42}><p>Stake</p></button>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "proxy": "http://192.168.122.1:8545",
+  "proxy": "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
   "dependencies": {
     "ethers": "^6.11.1",
     "next": "14.1.4",

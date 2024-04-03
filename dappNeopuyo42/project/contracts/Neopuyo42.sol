@@ -4,7 +4,7 @@ pragma solidity >0.4.0 <= 0.8.24;
 import "./Ownable.sol";
 import "./Stakeable.sol";
 
-contract FiveToken is Ownable, Stakeable {
+contract Neopuyo42 is Ownable, Stakeable {
     uint256 private _totalSupply;
     uint8 private _decimals;
     string private _symbol;
@@ -33,9 +33,9 @@ contract FiveToken is Ownable, Stakeable {
     /* ---------------------------internal methods---------------------------------------  */
 
     function _transfer(address sender, address recipient, uint256 amount) internal {
-        require(sender != address(0), "FiveToken: transfer from zero address");
-        require(recipient != address(0), "FiveToken: transfer to zero address");
-        require(_balances[sender] >= amount, "FiveToken: cant transfer more than your account holds");
+        require(sender != address(0), "Neopuyo42: transfer from zero address");
+        require(recipient != address(0), "Neopuyo42: transfer to zero address");
+        require(_balances[sender] >= amount, "Neopuyo42: cant transfer more than your account holds");
 
         _balances[sender] = _balances[sender] - amount;
         _balances[recipient] = _balances[recipient] + amount;
@@ -44,7 +44,7 @@ contract FiveToken is Ownable, Stakeable {
     }
 
     function _mint(address account, uint256 amount) internal {
-        require(account != address(0), "FiveToken: cannot mint to zero address");
+        require(account != address(0), "Neopuyo42: cannot mint to zero address");
 
         _totalSupply = _totalSupply + amount;
         _balances[account] = _balances[account] + amount;
@@ -53,8 +53,8 @@ contract FiveToken is Ownable, Stakeable {
     }
 
     function _burn(address account, uint256 amount) internal {
-        require(account != address(0), "FiveToken: cannot burn from zero address");
-        require(_balances[account] >= amount, "FiveToken: Cannot burn more than the account owns");
+        require(account != address(0), "Neopuyo42: cannot burn from zero address");
+        require(_balances[account] >= amount, "Neopuyo42: Cannot burn more than the account owns");
 
         _balances[account] = _balances[account] - amount;
         _totalSupply = _totalSupply - amount;
@@ -63,8 +63,8 @@ contract FiveToken is Ownable, Stakeable {
     }
 
     function _approve(address owner, address spender, uint256 amount) internal {
-        require(owner != address(0), "FiveToken: approve cannot be done from zero address");
-        require(spender != address(0), "FiveToken: approve cannot be to zero address");
+        require(owner != address(0), "Neopuyo42: approve cannot be done from zero address");
+        require(spender != address(0), "Neopuyo42: approve cannot be to zero address");
 
         _allowances[owner][spender] = amount;
 
@@ -138,14 +138,14 @@ contract FiveToken is Ownable, Stakeable {
     }
 
     function stake(uint256 amount) public {
-        require(amount <= _balances[msg.sender], "FiveToken: Cannot stake more than you own");
+        require(amount <= _balances[msg.sender], "Neopuyo42: Cannot stake more than you own");
 
         _stake(amount);
         _burn(msg.sender, amount);
     }
 
     function transferFrom(address spender, address recipient, uint256 amount) external returns(bool){
-        require(_allowances[spender][msg.sender] >= amount, "FiveToken: You cannot spend that much on this account");
+        require(_allowances[spender][msg.sender] >= amount, "Neopuyo42: You cannot spend that much on this account");
         _transfer(spender, recipient, amount);
         _approve(spender, msg.sender, _allowances[spender][msg.sender] - amount);
         return true;

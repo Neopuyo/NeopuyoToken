@@ -24,10 +24,10 @@ echo -e "\033[0;32mInstalling dependencies complete\033[0m"
 
 
 # To DEBUG or start build app
-tail -f /dev/null
+# tail -f /dev/null
 
 # to run in developpement mode (with nextJs)
-# npm run dev
+npm run dev
 
 # to run in production mode
 # npm run build

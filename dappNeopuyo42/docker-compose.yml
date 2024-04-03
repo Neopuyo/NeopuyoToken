@@ -18,7 +18,7 @@ services:
       - neopuyoNetwork
     restart: always
 
-  react-five:
+  react-frontend:
     build:
       context: ./frontend/
       dockerfile: ./whaleSetupFrontend/Dockerfile
