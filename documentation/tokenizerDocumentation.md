@@ -310,6 +310,10 @@ You are accessing the MetaMask window.web3.currentProvider shim. This property i
 
 Le tuto utilise un methode deprecated, mettre à jour en remplaçant, [doc](https://docs.metamask.io/wallet/concepts/wallet-api/) metamask concerné.
 
+
+**NextJS**  
+[Next.JS 13.4 : Using Context API in App router](https://medium.com/@seb_5882/nextjs-13-4-using-context-api-in-app-router-a1198a61c5c8)  
+
 ---
 
 
