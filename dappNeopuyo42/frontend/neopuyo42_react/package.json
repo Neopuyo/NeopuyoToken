@@ -10,10 +10,15 @@
   },
   "proxy": "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "ethers": "^6.11.1",
+    "framer-motion": "^11.0.24",
     "next": "14.1.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-icons": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

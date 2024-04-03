@@ -254,7 +254,7 @@ Play around with fake money and get familiar with the wallet.
 7. - seems Bsc testnet not working (yet / anymore ?) -> let's follow **Hardhat** doc that advise to deploy on [Ethereum](https://ethereum.org/en/developers/docs/networks/#ethereum-testnets) with **sepolia testnet** in this, [doc](https://docs.alchemy.com/docs/how-to-deploy-a-smart-contract-to-the-sepolia-testnet) from **Alchemy**  
 ***Aborted** : Sepolia Faucet need holding 0.001 ETH on mainnet to give sepoliaETH*  
 8. - Bsc testnet is working back ! Can go on from point 6. Let's now implement our own contract from Percy tutorials deloy them with Hardhat and then interact with it from the rReact dapp.
-lets use NexjJS too and link Metamask types with typescript ([Connecting to MetaMask with Next.js and Typescript](https://medium.com/@mansour-qaderi/connecting-to-metamask-with-next-js-and-typescript-63a294144443))
+lets use NexjJS too and link Metamask types with typescript ([Connecting to MetaMask with Next.js and Typescript](https://medium.com/@mansour-qaderi/connecting-to-metamask-with-next-js-and-typescript-63a294144443)) + [How to call smart contracts using Ethers + NextJS](https://medium.com/@flavtech/how-to-easily-call-smart-contracts-using-ethers-nextjs-dd3dabd43c07)
 
 
 
