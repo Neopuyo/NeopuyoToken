@@ -1,0 +1,34 @@
+version: "3.8"
+
+networks:
+  neopuyoNetwork:
+    name: neopuyoNetwork
+
+services:
+  project:
+    build:
+      context: .
+      dockerfile: ./whaleSetupProject/Dockerfile
+    container_name: ${NAME}
+    ports:
+      - "8545:8545" # when need using npx hardhat node
+    volumes:
+      - ./project/:/usr/src/app/
+    networks:
+      - neopuyoNetwork
+    restart: always
+
+  react-five:
+    build:
+      context: ./frontend/
+      dockerfile: ./whaleSetupFrontend/Dockerfile
+    container_name: ${NAME}-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/neopuyo42_react/:/usr/src/app/neopuyo42_react
+    networks:
+      - neopuyoNetwork
+    restart: always
+    depends_on:
+      - project
