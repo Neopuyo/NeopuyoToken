@@ -54,6 +54,7 @@ export const useWeb3Provider = () => {
         });
 
         localStorage.setItem("isAuthenticated", "true");
+        console.log("connectWallet : User connected to metamask with :", accounts[0]);
       }
     } catch(error) {
       console.log("connectWallet : ", (error as Error).message);
@@ -67,6 +68,7 @@ export const useWeb3Provider = () => {
   }, [web3, toast]);
 
   const disconnect = () => {
+    console.log(`User ${web3.address} Disconnected from metamask`);
     setWeb3(initialWeb3Props);
     localStorage.removeItem("isAuthenticated");
   };

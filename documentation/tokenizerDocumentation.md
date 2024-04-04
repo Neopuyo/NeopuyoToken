@@ -76,7 +76,7 @@ A **self-executing program** on a blockchain. Written in blockchain-specific pro
 
 The Contract `A`pplication `B`inary `I`nterface is the standard way to interact with contracts in the Ethereum ecosystem, both from outside the blockchain and for contract-to-contract interaction. Data is encoded according to its type, as described in this specification.
 
-> This ABI is a JSON file generated when `truffle compile` in `build` folder.
+> This ABI is a JSON file generated when `truffle compile` or `npx hardhat compile` in `build` folder.
 
 <br/>
 

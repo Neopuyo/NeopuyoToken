@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import { ethers } from "ethers";
-import { getNeopuyo42ContractAddress } from "../tools/getNeopuyo42Address";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
 import { Button, HStack, Icon, VStack, Text } from "@chakra-ui/react";
-import { FaEthereum } from "react-icons/fa";
+import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
 
 
 interface MetamaskData {
@@ -29,6 +28,8 @@ export default function Home() {
     web3: { isAuthenticated, address, chainID, provider },
   } = useWeb3Context() as IWeb3Context;
 
+  const hookContract = useNeopuyo42Contract();
+
   const [meta, setMeta] = useState<MetamaskData>({
     accounts: [],
     totalSupply: "0",
@@ -38,6 +39,58 @@ export default function Home() {
     signer: null,
     provider: null,
   });
+
+  
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("METAMASK CONNECTED");
+      if (!hookContract) {
+        console.log("hookContract is null");
+        return;
+      }
+      getContract();
+      // getWalletInfos();
+    }
+  }, [isAuthenticated]);
+
+  async function getContract() {
+    try {
+      const contract = await hookContract;
+      // setMeta((prevState) => ({ ...prevState, neopuyo42Contract: contract }));
+      console.log("neopuyo42Contract = ", contract);
+    } catch (error) {
+      console.error("getContract Error : ", (error as Error).message);
+    }
+  }
+
+  // async function getWalletInfos() {
+  //   try {
+  //     if (window.ethereum) {
+  //       await meta.neopuyo42Contract!.totalSupply().then((rawValue) => {
+  //         const formatedValue = ethers.formatEther(rawValue);
+  //         console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
+  //         setMeta((prevState) => ({ ...prevState, totalSupply: formatedValue }));
+  //       });
+
+  //     await meta.neopuyo42Contract!.balanceOf(meta.accounts[0]).then((rawValue) => {
+  //       const formatedValue = ethers.formatEther(rawValue);
+  //       console.log("accountBalance = ",rawValue, " => ", formatedValue); // [!] debug
+  //       setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
+  //     });
+
+  //     await meta.neopuyo42Contract!.hasStake(meta.accounts[0]).then((stackingSummary) => {
+  //       const formatedValue = ethers.formatEther(stackingSummary.total_amount);
+  //       console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
+  //       setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
+  //     });
+  //     } else {
+  //       throw new Error("Can't getWalletInfos from Metamask.");
+  //     }
+  //   } catch (error) {
+  //     console.log("getWalletInfos Error : ", (error as Error).message);
+  //   }
+  // }
 
   if (!isAuthenticated) {
     return (
@@ -156,34 +209,6 @@ export default function Home() {
   //   );
   // }
 
-  // async function getWalletInfos() {
-  //   try {
-  //     if (window.ethereum) {
-  //       await meta.neopuyo42Contract!.totalSupply().then((rawValue) => {
-  //         const formatedValue = ethers.formatEther(rawValue);
-  //         console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
-  //         setMeta((prevState) => ({ ...prevState, totalSupply: formatedValue }));
-  //       });
-
-  //     await meta.neopuyo42Contract!.balanceOf(meta.accounts[0]).then((rawValue) => {
-  //       const formatedValue = ethers.formatEther(rawValue);
-  //       console.log("accountBalance = ",rawValue, " => ", formatedValue); // [!] debug
-  //       setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
-  //     });
-
-  //     await meta.neopuyo42Contract!.hasStake(meta.accounts[0]).then((stackingSummary) => {
-  //       const formatedValue = ethers.formatEther(stackingSummary.total_amount);
-  //       console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
-  //       setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
-  //     });
-  //     } else {
-  //       throw new Error("Can't getWalletInfos from Metamask.");
-  //     }
-  //   } catch (error) {
-  //     console.log("getWalletInfos Error : ", (error as Error).message);
-  //   }
-  // }
-
   // async function stakeNeopuyo42() {
   //   try {
   //     const amount = 1472;
@@ -230,33 +255,6 @@ export default function Home() {
   //     console.log("Stake transaction Done receipt : ", receipt);
   //   } catch (error) {
   //     console.log("stakeNeopuyo42 Error : ", (error as Error).message);
-  //   }
-  // }
-
-  // async function getABI(): Promise<any[]> {
-  //   let ABI: any[] = [];
-
-  //   await fetch("./abi/Neopuyo42.json", {
-  //     headers : {
-  //       'Accept': 'application.json',
-  //       'Content-Type': 'application.json',
-  //     }
-  //   }).then((response) => {
-  //     if (response.status === 200) {
-  //       return response.json();
-  //     } else {
-  //       throw new Error('Error fetching ABI (Neopuyo42.json)');
-  //     }
-  //   }).then((data) => {
-  //     ABI = data.abi;
-  //   }).catch((error) => {
-  //     throw new Error(error);
-  //   });
-
-  //   if (Array.isArray(ABI) && ABI.length > 0) {
-  //     return ABI;
-  //   } else {
-  //     throw new Error('Invalid ABI format.');
   //   }
   // }
 
