@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./context/Providers";
+import MainFrame from "./components/MainFrame";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,14 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen dark:bg-slate-900 antialiased">
         <Providers>
-          {children}
+          <MainFrame >
+            {children}
+          </MainFrame>
         </Providers>
       </body>
     </html>
   );
 }
+
+
+

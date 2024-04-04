@@ -84,10 +84,15 @@ export const useWeb3Provider = () => {
     if (window.ethereum == null || typeof window.ethereum === "undefined") return;
 
     window.ethereum.on("accountsChanged", (accounts: string[]) => {
+      console.log("[Event] accountsChanged => accounts = ", accounts); // [!] Debug
       setWeb3({ ...web3, address: accounts[0] });
     });
-
-    window.ethereum.on("networkChanged", (network: string) => {
+    
+    // [N] MetaMask warning: The event 'networkChanged' is deprecated and may be removed in the future.
+    // Use 'chainChanged' instead.
+    // For more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged
+    window.ethereum.on("chainChanged", (network: string) => {
+      console.log("[Event] chainChanged => chainId :", Number(network)); // [!] Debug
       setWeb3({ ...web3, chainID: Number(network) });
     });
 
