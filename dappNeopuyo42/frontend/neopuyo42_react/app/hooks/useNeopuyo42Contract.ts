@@ -5,14 +5,21 @@ import { getNeopuyo42ContractABI, getNeopuyo42ContractAddress} from "tools/getNe
 
 const address = getNeopuyo42ContractAddress();
 
-const useNeopuyo42Contract = async () => {
+// [N] : a React Custom hook 
+// Remember hooks should not be async functions
+const useNeopuyo42Contract = () => {
   const { web3 } = useWeb3Context() as IWeb3Context;
 
-  const abi = await getNeopuyo42ContractABI();
-
+  
   return useMemo(
-    () => web3.signer && new Contract(address, abi, web3.signer),
-    [web3.signer, abi]
+    async () => {
+      console.log("useNeopuyo42Contract useMemo hook called"); // [!] debug, check ig memo used is ok
+      const promise = getNeopuyo42ContractABI();
+      const abi = await promise;
+      if (!web3.signer) return null;
+      const contract = new Contract(address, abi, web3.signer);
+      return contract;
+    },[web3.signer]
   );
 };
 
