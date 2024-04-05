@@ -3,9 +3,8 @@
 import React, { use, useEffect, useMemo, useState } from "react"
 import { ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { Button, HStack, Icon, VStack, Text } from "@chakra-ui/react";
+import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
-import { get } from "http";
 
 
 interface MetamaskData {
@@ -24,7 +23,7 @@ export default function Home() {
   const {
     connectWallet,
     disconnect,
-    web3: { isAuthenticated, address, chainID, accounts, provider },
+    web3: { isAuthenticated, address, chainID, accounts, provider, signer },
   } = useWeb3Context() as IWeb3Context;
 
   const neopuyo42Contract = useNeopuyo42Contract();
@@ -35,8 +34,6 @@ export default function Home() {
     accountTotalStake: "0",
     neopuyo42Contract: null,
   });
-
-  
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -54,6 +51,8 @@ export default function Home() {
       getMetamaskInfos();
     }
   }, [meta.neopuyo42Contract, address, accounts]);
+
+  // ----------------------------------------------------------
 
   async function getContract() {
     try {
@@ -138,15 +137,19 @@ export default function Home() {
   // }, [meta.neopuyo42Contract]);
 
   // async function createStakeListener() {
+  //   if (!meta.neopuyo42Contract) {
+  //     console.log("neopuyo42Contract is null");
+  //     return;
+  //   }
   //   try {
   //     meta.neopuyo42Contract!.on("Staked", async (stakerRaw: string, amount: any) => {
   //       console.log("Staked event : ", stakerRaw, amount.toString());
   //       const staker = ethers.getAddress(stakerRaw).toLowerCase();
   //       console.log("StakerRaw: ", stakerRaw, " => ", staker);
-  //       if (staker === meta.accounts[0]) {
-  //         console.log("Staked event from current user");
+  //       if (staker === address) {
+  //         console.log("Staked event from current user, refreshing states...");
+  //         await getMetamaskInfos();
   //       }
-  //       await getWalletInfos();
   //     });
   //   } catch (error) {
   //     console.error("Error listener:", (error as Error).message);
@@ -154,76 +157,102 @@ export default function Home() {
   // }
 
   // [K] Keep this 
-  // function isMetamaskConnected() {
-  //   return (
-  //     typeof meta.neopuyo42Contract !== "undefined" &&
-  //     typeof meta.accounts[0] !== "undefined"
-  //   );
-  // }
-
-  // [K] Keep this 
-  // async function stakeNeopuyo42() {
-  //   try {
-  //     const amount = 1472;
-  //     const abi = await getABI();
-  //     const address = getNeopuyo42ContractAddress();
-  //     const contractS = new ethers.Contract(address, abi, meta.signer);
-  //     const amountParsed = ethers.parseEther(amount.toString());
+  async function stakeNeopuyo42() {
+    if (!meta.neopuyo42Contract || !provider || !signer ) { return; }
+    try {
+      const amount = 1472;
+      const amountParsed = ethers.parseEther(amount.toString());
       
-  //     // Estimate gas cost and ask confirmation
-  //     const gasEstimate = await contractS.stake.estimateGas(amountParsed);
-  //     const gasPrice = (await meta.provider!.getFeeData()).gasPrice;
+      // Estimate gas cost and ask confirmation
+      const gasEstimate = await meta.neopuyo42Contract.stake.estimateGas(amountParsed);
+      const gasPrice = (await provider.getFeeData()).gasPrice;
 
-  //     console.log("gasPrice : ", gasPrice);
-  //     console.log("gasEstimate : ", gasEstimate);
+      console.log("gasPrice : ", gasPrice);
+      console.log("gasEstimate : ", gasEstimate);
 
-  //     const gasCost = gasEstimate * gasPrice!; // [!] care unwrapping
-  //     const gasCostInEth = ethers.formatEther(gasCost);
-  //     console.log("gasCost : ", gasCost);
+      const gasCost = gasEstimate * gasPrice!; // [!] care unwrapping
+      const gasCostInEth = ethers.formatEther(gasCost);
+      console.log("gasCost : ", gasCost);
 
-  //     console.log("Gas cost: ", gasCostInEth, " Ether");
+      console.log("Gas cost: ", gasCostInEth, " Ether");
 
-  //     const confirmed = await window.ethereum.request({
-  //       method: "eth_sendTransaction",
-  //       params: [
-  //         {
-  //           to: address,
-  //           from: await meta.signer!.getAddress(),
-  //           value: "0x0",
-  //           gas: gasEstimate.toString(),
-  //           gasPrice: gasPrice?.toString(),
-  //           data: contractS.interface.encodeFunctionData("stake", [amountParsed]),
-  //         },
-  //       ],
-  //     });
+      const confirmed = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            to: address,
+            from: await signer.getAddress(),
+            value: "0x0",
+            gas: gasEstimate.toString(),
+            gasPrice: gasPrice?.toString(),
+            data: meta.neopuyo42Contract.interface.encodeFunctionData("stake", [amountParsed]),
+          },
+        ],
+      });
 
-  //     if (!confirmed) {
-  //       console.log("Transaction canceled.");
-  //       return;
-  //     }
+      if (!confirmed) {
+        console.log("Transaction canceled.");
+        return;
+      }
 
-  //     console.log("Transaction validate, waiting for process...");
+      console.log("Transaction validate, waiting for process...");
 
-  //     const receipt = await meta.provider!.waitForTransaction(confirmed);
-  //     console.log("Stake transaction Done receipt : ", receipt);
-  //   } catch (error) {
-  //     console.log("stakeNeopuyo42 Error : ", (error as Error).message);
-  //   }
-  // }
-
-
+      const receipt = await provider.waitForTransaction(confirmed);
+      console.log("Stake transaction Done receipt : ", receipt);
+      await getMetamaskInfos(); // [!] refresh UI
+    } catch (error) {
+      console.log("stakeNeopuyo42 Error : ", (error as Error).message);
+    }
+  }
 
   // for later : onClick={stakeNeopuyo42}
   return (
     <div className="flex flex-col flex-1 justify-center items-center text-white">
       <div className="grid gap-4">
-        <p>Authenticated</p>
-        <p> Account Address : {address}</p>
-        {meta.totalSupply === "0" && <p>Neopuyo42 total supply: 0</p>}
-        {meta.totalSupply !== "0" && <p>Neopuyo42 total supply: {meta.totalSupply} Neo</p>}
-        <p> Your Neopuyo42 balance: {meta.accountBalance} Neo</p>
-        <p> Your Neopuyo42 stack: {meta.accountTotalStake} Neo</p>
-        <button className="bg-black text-white p-4 rounded-lg"><p>Stake</p></button>
+      <Card borderWidth="4px" borderRadius="md" borderColor="teal.500">
+
+        <CardHeader>
+          <Heading size='lg' fontWeight="bold" color="teal.400">My Neopuyo42 Account</Heading>
+        </CardHeader>
+
+        <CardBody>
+          <Stack divider={<StackDivider />} spacing='4'>
+            <Box>
+              <Text fontSize="xs" color="gray.400">Account Address</Text>
+              <Text fontSize="xl">{address}</Text>
+            </Box>
+
+            <Box>
+              <Text fontSize="xs" color="gray.400">Neopuyo42 total token</Text>
+              <HStack>
+                <Text fontSize="xl" color="gray.400">{meta.totalSupply}</Text>
+                <Heading size="md" color="teal.400">Neo</Heading>
+              </HStack>
+            </Box>
+
+
+            <Box>
+              <Text fontSize="xs" color="gray.400">
+                my Neopuyo42
+              </Text>
+              <Heading size="md" color="teal.400">{`${meta.accountBalance} Neo`}</Heading>
+            </Box>
+
+            <Box textAlign="right">
+              <Text fontSize="xs" color="gray.400">
+                my Stakes
+              </Text>
+              <Heading size="md" color="teal.400">{`${meta.accountTotalStake} Neo`}</Heading>
+            </Box>
+          </Stack>
+        </CardBody>
+        <Divider />
+        <CardFooter justifyContent="flex-end">
+          <Button onClick={stakeNeopuyo42} variant="solid" bg="yellow.400" color="white" gap={2} >
+            <Text fontSize="xl" fontWeight="bold" paddingTop="4px">Stake</Text>
+          </Button>
+        </CardFooter>
+      </Card>
       </div>
     </div>
   );

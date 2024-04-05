@@ -55,7 +55,7 @@ export const useWeb3Provider = () => {
         setWeb3({
           ...web3,
           address: accounts[0],
-          signer,
+          signer: signer,
           chainID: chain,
           accounts: accounts,
           provider,
@@ -124,9 +124,12 @@ export const useWeb3Provider = () => {
     web3,
   };
 
-
   async function _checkNetwork() {
-    if (window.ethereum.networkVersion !== BSC_CHAIN_ID) {
+    const networkID = await window.ethereum.request({
+      method: 'net_version',
+    });
+    if (networkID !== BSC_CHAIN_ID) {
+      console.log("Wrong networkID : ", networkID, "Ask switching...");
       _switchChain();
     }
   }
