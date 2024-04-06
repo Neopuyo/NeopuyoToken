@@ -1,10 +1,12 @@
 "use client"
 
-import React, { use, useEffect, useMemo, useState } from "react"
-import { ethers } from "ethers";
+import React, { useEffect, useMemo, useState } from "react"
+import { TransactionRequest, ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider } from "@chakra-ui/react";
+import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider, Input, FormControl, FormLabel } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
+import { BiStar } from "react-icons/bi";
+import { Neopuyo42Handler, Tx, TxStatus } from "./handler/neopuyo42Handler";
 
 
 interface MetamaskData {
@@ -12,6 +14,7 @@ interface MetamaskData {
   totalSupply: string;
   accountBalance: string;
   accountTotalStake: string;
+  isTokenOwner: boolean;
   neopuyo42Contract: ethers.Contract | null;
   // signer: ethers.Signer | null;
   // provider: ethers.JsonRpcProvider | null; // hardhat local networtk
@@ -26,20 +29,24 @@ export default function Home() {
     web3: { isAuthenticated, address, chainID, accounts, provider, signer },
   } = useWeb3Context() as IWeb3Context;
 
-  const neopuyo42Contract = useNeopuyo42Contract();
+  const neopuyo42Handler = useNeopuyo42Contract();
+  const [stakeAmount, setStakeAmount] = useState<number | "">("");
+
+  const [tx, setTx] = useState<Tx>({status: TxStatus.IDLE, message: "No transaction in progress"});
 
   const [meta, setMeta] = useState<MetamaskData>({
     totalSupply: "0",
     accountBalance: "0",
     accountTotalStake: "0",
+    isTokenOwner: false,
     neopuyo42Contract: null,
   });
 
   useEffect(() => {
     if (isAuthenticated) {
       console.log("METAMASK CONNECTED");
-      if (!neopuyo42Contract) {
-        console.log("neopuyo42Contract is null");
+      if (!neopuyo42Handler) {
+        console.log("neopuyo42handler is null");
         return;
       }
       getContract();
@@ -56,13 +63,13 @@ export default function Home() {
 
   async function getContract() {
     try {
-      const contract = await neopuyo42Contract;
-      if (!contract) {
-        console.log("neopuyo42Contract is not available");
+      const handler = await neopuyo42Handler;
+      if (!handler) {
+        console.log("neopuyo42Contract handler is not available");
         return;
       }
-      console.log("neopuyo42Contract is ready -> ", contract);
-      setMeta((prevState) => ({ ...prevState, neopuyo42Contract: contract }));
+      console.log("neopuyo42Contract handler is ready -> ", handler);
+      setMeta((prevState) => ({ ...prevState, neopuyo42Contract: handler.neoContract }));
     } catch (error) {
       console.error("getContract Error : ", (error as Error).message);
     }
@@ -72,7 +79,6 @@ export default function Home() {
     try {
       if (meta.neopuyo42Contract) {
 
-        
         await meta.neopuyo42Contract!.totalSupply().then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
           console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
@@ -91,6 +97,12 @@ export default function Home() {
           setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
         });
 
+        await meta.neopuyo42Contract!.getOwner().then((ownerAddress: string) => {
+          if (address && address.toLowerCase() === ownerAddress.toLowerCase()) {
+            setMeta((prevState) => ({ ...prevState, isTokenOwner: true }));
+          }
+        });
+
       } else {
         throw new Error("Can't getWalletInfos from Metamask.");
       }
@@ -98,7 +110,77 @@ export default function Home() {
       console.log("getWalletInfos Error : ", (error as Error).message);
     }
   }
+  
+  function _contractSetupError(): boolean {
+    const isError = (!meta.neopuyo42Contract || !provider || !signer || !neopuyo42Handler );
+    // [!] DEBUG
+    if (!meta.neopuyo42Contract) { console.log("[setUp] !meta.neopuyo42Contract");}
+    if (!provider)               { console.log("[setUp] !provider");}
+    if (!signer)                 { console.log("[setUp] !signer");}
+    if (!neopuyo42Handler)       { console.log("[setUp] !neopuyo42Handler");}
+    if (isError) {
+      setTx({status:TxStatus.ERROR, message:"Error in fetching Neopuyo42 token contract, please try later."});
+    }
+    return isError;
+  }
 
+  async function stakeNeopuyo42() {
+    if (_contractSetupError()) { 
+      setTx({status: TxStatus.ERROR, message: "Error in retreiving Neopuyo42 contractm, try later please"});
+      return; 
+    }
+    const amount = stakeAmount !== "" ? stakeAmount : 0;
+    (await neopuyo42Handler)?.stakeNeopuyo42(amount, setTx, getMetamaskInfos);
+  }
+
+  // ---------------------------------------------------
+
+  function _getTxColor(): string {
+    switch (tx.status) {
+      case TxStatus.IDLE:
+        return "gray.400";
+      case TxStatus.PENDING:
+        return "yellow.500";
+      case TxStatus.SUCCESS:
+        return "teal.400";
+      case TxStatus.ERROR:
+        return "red.300";
+    }
+  }
+
+  function _getTxMessage(): string {
+    const maxLength = 72;
+    const message = tx.message;
+
+    if (tx.message.length <= maxLength) {
+      return tx.message;
+    }
+
+    return `${tx.message.substring(0, maxLength)}...`;
+  }
+
+  const _handleStakeSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (_isStakeAmountInvalid) {
+      setTx({status: TxStatus.ERROR, message: "Please set a correct value for staking"});
+      return; 
+    }
+    if (stakeAmount > Number(meta.accountBalance)) {
+      setTx({status: TxStatus.ERROR, message: `You can't stake more than ${meta.accountBalance}`});
+      return; 
+    }
+    stakeNeopuyo42();
+  };
+
+  const _isStakeAmountInvalid = stakeAmount === "" || stakeAmount <= 0 || isNaN(stakeAmount);
+
+  const _handleStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericValue = value === "" ? "" : Number(value);
+    setStakeAmount(numericValue);
+  };
+
+  // ----------------------------------------------------
   if (window.ethereum === undefined) { 
     return (
       <VStack>
@@ -123,89 +205,6 @@ export default function Home() {
     );
   }
 
-  // [K] Keep this 
-  // useEffect(() => {
-  //   async function rmStakeListener() {
-  //      await meta.neopuyo42Contract?.removeAllListeners("Staked");
-  //   }
-  //   if (meta.neopuyo42Contract) {
-  //     createStakeListener();
-  //     return () => {
-  //       rmStakeListener();
-  //     };
-  //   }
-  // }, [meta.neopuyo42Contract]);
-
-  // async function createStakeListener() {
-  //   if (!meta.neopuyo42Contract) {
-  //     console.log("neopuyo42Contract is null");
-  //     return;
-  //   }
-  //   try {
-  //     meta.neopuyo42Contract!.on("Staked", async (stakerRaw: string, amount: any) => {
-  //       console.log("Staked event : ", stakerRaw, amount.toString());
-  //       const staker = ethers.getAddress(stakerRaw).toLowerCase();
-  //       console.log("StakerRaw: ", stakerRaw, " => ", staker);
-  //       if (staker === address) {
-  //         console.log("Staked event from current user, refreshing states...");
-  //         await getMetamaskInfos();
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error("Error listener:", (error as Error).message);
-  //   }
-  // }
-
-  // [K] Keep this 
-  async function stakeNeopuyo42() {
-    if (!meta.neopuyo42Contract || !provider || !signer ) { return; }
-    try {
-      const amount = 1472;
-      const amountParsed = ethers.parseEther(amount.toString());
-      
-      // Estimate gas cost and ask confirmation
-      const gasEstimate = await meta.neopuyo42Contract.stake.estimateGas(amountParsed);
-      const gasPrice = (await provider.getFeeData()).gasPrice;
-
-      console.log("gasPrice : ", gasPrice);
-      console.log("gasEstimate : ", gasEstimate);
-
-      const gasCost = gasEstimate * gasPrice!; // [!] care unwrapping
-      const gasCostInEth = ethers.formatEther(gasCost);
-      console.log("gasCost : ", gasCost);
-
-      console.log("Gas cost: ", gasCostInEth, " Ether");
-
-      const confirmed = await window.ethereum.request({
-        method: "eth_sendTransaction",
-        params: [
-          {
-            to: address,
-            from: await signer.getAddress(),
-            value: "0x0",
-            gas: gasEstimate.toString(),
-            gasPrice: gasPrice?.toString(),
-            data: meta.neopuyo42Contract.interface.encodeFunctionData("stake", [amountParsed]),
-          },
-        ],
-      });
-
-      if (!confirmed) {
-        console.log("Transaction canceled.");
-        return;
-      }
-
-      console.log("Transaction validate, waiting for process...");
-
-      const receipt = await provider.waitForTransaction(confirmed);
-      console.log("Stake transaction Done receipt : ", receipt);
-      await getMetamaskInfos(); // [!] refresh UI
-    } catch (error) {
-      console.log("stakeNeopuyo42 Error : ", (error as Error).message);
-    }
-  }
-
-  // for later : onClick={stakeNeopuyo42}
   return (
     <div className="flex flex-col flex-1 justify-center items-center text-white">
       <div className="grid gap-4">
@@ -218,7 +217,10 @@ export default function Home() {
         <CardBody>
           <Stack divider={<StackDivider />} spacing='4'>
             <Box>
-              <Text fontSize="xs" color="gray.400">Account Address</Text>
+              <HStack alignItems="baseline">
+                <Text fontSize="xs" color="gray.400">Account Address</Text>
+                {meta.isTokenOwner && <Icon  as={BiStar} color="yellow.400"/>}
+              </HStack>
               <Text fontSize="xl">{address}</Text>
             </Box>
 
@@ -230,8 +232,7 @@ export default function Home() {
               </HStack>
             </Box>
 
-
-            <Box>
+            <Box textAlign="right">
               <Text fontSize="xs" color="gray.400">
                 my Neopuyo42
               </Text>
@@ -246,12 +247,43 @@ export default function Home() {
             </Box>
           </Stack>
         </CardBody>
+
         <Divider />
+
         <CardFooter justifyContent="flex-end">
-          <Button onClick={stakeNeopuyo42} variant="solid" bg="yellow.400" color="white" gap={2} >
-            <Text fontSize="xl" fontWeight="bold" paddingTop="4px">Stake</Text>
-          </Button>
+          <FormControl /*onSubmit={_handleStakeSubmit}*/ >
+            <FormLabel>
+            <Text fontSize="xs" color="gray.400">Stake some Neopuyo42 token</Text></FormLabel>
+            <HStack alignItems="top">
+              <Input type="number"
+                  value={stakeAmount}
+                  onChange={_handleStakeAmountChange}
+                  placeholder="Enter amount to stake"
+                  mb={4}
+              />
+              <Button onClick={stakeNeopuyo42} disabled variant="solid" bg="yellow.400" color="white" gap={2} >
+                <Text fontSize="xl" fontWeight="bold" paddingTop="4px">Stake</Text>
+              </Button>
+            </HStack>
+          </FormControl>
         </CardFooter>
+
+      </Card>
+
+      <Card borderWidth="4px" borderRadius="md" borderColor="yellow.400">
+
+        <CardHeader>
+          <Heading size='md' fontWeight="bold" color="yellow.400">Transaction</Heading>
+        </CardHeader>
+
+        <CardBody>
+          <Stack divider={<StackDivider />} spacing='4'>
+            <Box>
+                <Text fontSize="xs" color={_getTxColor()}>{_getTxMessage()}</Text>
+            </Box>
+          </Stack>
+        </CardBody>
+
       </Card>
       </div>
     </div>
