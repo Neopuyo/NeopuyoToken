@@ -3,9 +3,10 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { TransactionRequest, ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider, Input, FormControl, FormLabel } from "@chakra-ui/react";
+import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider, Input, FormControl, FormLabel, IconButton, NumberInputField, NumberInput, NumberIncrementStepper, NumberInputStepper, NumberDecrementStepper } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
 import { BiStar } from "react-icons/bi";
+import { RiDeleteBack2Line } from "react-icons/ri";
 import { Neopuyo42Handler, Tx, TxStatus } from "./handler/neopuyo42Handler";
 
 
@@ -30,7 +31,7 @@ export default function Home() {
   } = useWeb3Context() as IWeb3Context;
 
   const neopuyo42Handler = useNeopuyo42Contract();
-  const [stakeAmount, setStakeAmount] = useState<number | "">("");
+  const [stakeAmount, setStakeAmount] = useState<number>(0);
 
   const [tx, setTx] = useState<Tx>({status: TxStatus.IDLE, message: "No transaction in progress"});
 
@@ -129,8 +130,7 @@ export default function Home() {
       setTx({status: TxStatus.ERROR, message: "Error in retreiving Neopuyo42 contractm, try later please"});
       return; 
     }
-    const amount = stakeAmount !== "" ? stakeAmount : 0;
-    (await neopuyo42Handler)?.stakeNeopuyo42(amount, setTx, getMetamaskInfos);
+    (await neopuyo42Handler)?.stakeNeopuyo42(stakeAmount, setTx, getMetamaskInfos);
   }
 
   // ---------------------------------------------------
@@ -159,8 +159,11 @@ export default function Home() {
     return `${tx.message.substring(0, maxLength)}...`;
   }
 
-  const _handleStakeSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const _clearInput = () => {
+    setStakeAmount(0);
+  }
+
+  const _handleStakeSubmit = () => {
     if (_isStakeAmountInvalid) {
       setTx({status: TxStatus.ERROR, message: "Please set a correct value for staking"});
       return; 
@@ -172,12 +175,23 @@ export default function Home() {
     stakeNeopuyo42();
   };
 
-  const _isStakeAmountInvalid = stakeAmount === "" || stakeAmount <= 0 || isNaN(stakeAmount);
+  const _isStakeAmountInvalid = (stakeAmount <= 0 || isNaN(stakeAmount));
 
-  const _handleStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numericValue = value === "" ? "" : Number(value);
-    setStakeAmount(numericValue);
+  const _handleStakeAmountChange = (valueAsString: string) => {
+    try {
+      const value = Number(valueAsString);
+      if (isNaN(value)) {
+        setStakeAmount(0);
+        return;
+      }
+      if (value < 0) {
+        setStakeAmount(0);
+        return;
+      }
+      setStakeAmount(value);
+    } catch (error) {
+      setTx({status: TxStatus.ERROR, message: "Please enter a correct stake value"});
+    }
   };
 
   // ----------------------------------------------------
@@ -251,17 +265,23 @@ export default function Home() {
         <Divider />
 
         <CardFooter justifyContent="flex-end">
-          <FormControl /*onSubmit={_handleStakeSubmit}*/ >
+          <FormControl onSubmit={() => _handleStakeSubmit} >
             <FormLabel>
             <Text fontSize="xs" color="gray.400">Stake some Neopuyo42 token</Text></FormLabel>
             <HStack alignItems="top">
-              <Input type="number"
-                  value={stakeAmount}
-                  onChange={_handleStakeAmountChange}
-                  placeholder="Enter amount to stake"
-                  mb={4}
-              />
-              <Button onClick={stakeNeopuyo42} disabled variant="solid" bg="yellow.400" color="white" gap={2} >
+              <FormControl>
+                <NumberInput max={Number(meta.accountBalance)} min={0}
+                  onChange={(valueAsString) => _handleStakeAmountChange(valueAsString)} value={stakeAmount !== 0 ? stakeAmount : ""}
+                  >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <IconButton icon={<RiDeleteBack2Line size={24} style={{ color: 'gray' }}/>} onClick={_clearInput} aria-label={""} />
+              <Button onClick={_handleStakeSubmit} variant="solid" bg={_isStakeAmountInvalid ? "gray.400" : "yellow.400"} color="white" gap={2}  >
                 <Text fontSize="xl" fontWeight="bold" paddingTop="4px">Stake</Text>
               </Button>
             </HStack>
