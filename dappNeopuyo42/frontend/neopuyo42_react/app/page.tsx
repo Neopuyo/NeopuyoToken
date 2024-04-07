@@ -1,14 +1,14 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
-import { TransactionRequest, ethers } from "ethers";
+import React, { useEffect, useState } from "react"
+import { ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { Button, HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, Highlight, CardFooter, Divider, Input, FormControl, FormLabel, IconButton, NumberInputField, NumberInput, NumberIncrementStepper, NumberInputStepper, NumberDecrementStepper } from "@chakra-ui/react";
+import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
 import { BiStar } from "react-icons/bi";
-import { RiDeleteBack2Line } from "react-icons/ri";
-import { Neopuyo42Handler, Tx, TxStatus } from "./handler/neopuyo42Handler";
+import { Tx, TxStatus } from "./handler/neopuyo42Handler";
 import StakeInput from "./components/StakeInput";
+import { StakingSummary } from "tools/types/StakingSummary";
 
 
 interface MetamaskData {
@@ -32,7 +32,6 @@ export default function Home() {
   } = useWeb3Context() as IWeb3Context;
 
   const neopuyo42Handler = useNeopuyo42Contract();
-  // const [stakeAmount, setStakeAmount] = useState<number>(0);
 
   const [tx, setTx] = useState<Tx>({status: TxStatus.IDLE, message: "No transaction in progress"});
 
@@ -93,9 +92,10 @@ export default function Home() {
           setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
         });
         
-        await meta.neopuyo42Contract!.hasStake(address).then((stackingSummary) => {
+        await meta.neopuyo42Contract!.hasStake(address).then((stackingSummary: StakingSummary) => {
           const formatedValue = ethers.formatEther(stackingSummary.total_amount);
           console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
+          console.log("stackingSummary = ",stackingSummary); // [!] debug
           setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
         });
 
@@ -128,7 +128,7 @@ export default function Home() {
 
   async function stakeNeopuyo42(stakeAmount: number) {
     if (_contractSetupError()) { 
-      setTx({status: TxStatus.ERROR, message: "Error in retreiving Neopuyo42 contractm, try later please"});
+      setTx({status: TxStatus.ERROR, message: "Error in retreiving Neopuyo42 contract, try later please"});
       return; 
     }
     (await neopuyo42Handler)?.stakeNeopuyo42(stakeAmount, setTx, getMetamaskInfos);
@@ -151,7 +151,6 @@ export default function Home() {
 
   function _getTxMessage(): string {
     const maxLength = 72;
-    const message = tx.message;
 
     if (tx.message.length <= maxLength) {
       return tx.message;
@@ -160,7 +159,7 @@ export default function Home() {
     return `${tx.message.substring(0, maxLength)}...`;
   }
 
-  // ----------------------------------------------------
+  // ----------------------------------------------------render
   if (window.ethereum === undefined) { 
     return (
       <VStack>
