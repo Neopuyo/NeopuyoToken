@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
+import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider, Tabs, TabList, Tab, TabPanels, TabPanel, Spacer } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
 import { BiStar } from "react-icons/bi";
 import { Tx, TxStatus } from "./handler/neopuyo42Handler";
@@ -143,6 +143,13 @@ export default function Home() {
     (await neopuyo42Handler)?.stakeNeopuyo42(stakeAmount, setTx, getMetamaskInfos);
   }
 
+  async function withdrawStake(amount: number, index: number) {
+    if (_contractSetupError()) { 
+      setTx({status: TxStatus.ERROR, message: "Error in retreiving Neopuyo42 contract, try later please"});
+      return; 
+    }
+    (await neopuyo42Handler)?.withdrawStake(amount, index, setTx, getMetamaskInfos);
+  }
   // ---------------------------------------------------
 
   function _getTxColor(): string {
@@ -159,7 +166,7 @@ export default function Home() {
   }
 
   function _getTxMessage(): string {
-    const maxLength = 72;
+    const maxLength = 200;
 
     if (tx.message.length <= maxLength) {
       return tx.message;
@@ -243,10 +250,10 @@ export default function Home() {
             <Box textAlign="left">
               <Text fontSize="md" fontWeight="bold" color={NeoColors.teal}>My stakes</Text>
             </Box>
-            <Tabs align='end' variant='enclosed' isLazy minWidth={500}>
+            <Tabs align='end' variant='enclosed' isLazy minWidth={550}>
               <TabList color={NeoColors.gray}>
-                <Tab _selected={{ color: NeoColors.teal }}>add</Tab>
-                <Tab _selected={{ color: NeoColors.teal }}>list</Tab>
+                <Tab _selected={{ color: NeoColors.teal }}>new stake</Tab>
+                <Tab _selected={{ color: NeoColors.teal }}>withdraw</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel height={400}>
@@ -257,7 +264,7 @@ export default function Home() {
                   />
                 </TabPanel>
                 <TabPanel height={400} overflowY={"scroll"}>
-                  <StakeList stakes={meta.stakes} />
+                  <StakeList stakes={meta.stakes} setTx={setTx} withdrawStake={withdrawStake}/>
                 </TabPanel>
               </TabPanels>
             </Tabs>
@@ -272,10 +279,10 @@ export default function Home() {
           <Heading size='md' fontWeight="bold" color={NeoColors.yellow}>Transaction</Heading>
         </CardHeader>
 
-        <CardBody>
+        <CardBody paddingTop={0} paddingBottom={0}>
           <Stack divider={<StackDivider />} spacing='4'>
-            <Box>
-                <Text fontSize="xs" color={_getTxColor()}>{_getTxMessage()}</Text>
+            <Box minHeight={100}>
+                <Text maxWidth={500} fontSize="xs" color={_getTxColor()}>{_getTxMessage()}</Text>
             </Box>
           </Stack>
         </CardBody>

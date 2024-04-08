@@ -3,20 +3,24 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { NeoColors } from "tools/types/NeoColors";
 import { Stake } from "tools/types/StakingSummary";
+import WithdrawInput from "./WithDrawInput";
+import { Tx } from "@/handler/neopuyo42Handler";
 
 type Props = {
   stakes: Stake[];
+  setTx: (tx: Tx) => void;
+  withdrawStake: (amount: number, index: number) => Promise<void>;
 };
 
-export default function StakeList({ stakes }: Props) {
+export default function StakeList({ stakes, setTx, withdrawStake }: Props) {
 
 
-  const StakeItem = ({ stake }: { stake: Stake }) => {
+  const StakeItem = ({ stake, index }: { stake: Stake, index: number }) => {
 
     if (!isValidUser(stake.user)) {
       return null;
     }
-
+    const stakeNum = (index + 1).toString();
     const amountF= ethers.formatEther(stake.amount);
     const claimableF= ethers.formatEther(stake.claimable);
     
@@ -44,6 +48,7 @@ export default function StakeList({ stakes }: Props) {
           <CardHeader  bg={NeoColors.grayLight} color={NeoColors.white} borderTopRadius={"lg"} borderBottomRadius={0} p={2}>
             <HStack color={NeoColors.gray}>
               <Heading size='md'>Stake</Heading>
+              <Text size='md'>{stakeNum}</Text>
               <Spacer />
               <Text size='md' fontWeight={"bold"} color={NeoColors.teal}>{amountF}</Text>
               <Text size='md' fontWeight={"bold"} color={NeoColors.teal}>Neo</Text>
@@ -60,7 +65,7 @@ export default function StakeList({ stakes }: Props) {
               </Box>
 
               <Box>
-                
+                <WithdrawInput stakeAmount={amountF} index={index} setTx={setTx} withdrawStake={withdrawStake}/>
               </Box>
             </Stack>
           </CardBody>
@@ -77,7 +82,7 @@ export default function StakeList({ stakes }: Props) {
   return (
     <div>
       {stakes.map((stake, index) => (
-        <StakeItem key={index} stake={stake} />
+        <StakeItem key={index} stake={stake} index={index} />
       ))}
     </div>
   );

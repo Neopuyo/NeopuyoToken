@@ -62,6 +62,48 @@ export class Neopuyo42Handler {
     }
   }
 
+  public async withdrawStake(amount: number, index: number, updateTransaction: TxCallback, updateUI: () => Promise<void>) {
+    let tx: Tx = {
+      status : TxStatus.IDLE,
+      message: "",
+    }
+
+    try {
+
+      const amountParsed = ethers.parseEther(amount.toString());
+      tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1} asked, valid transaction in Metamask to continue`);
+      updateTransaction({...tx, status:tx.status, message:tx.message});
+      console.log("[Withdraw debug]", tx.message); // [!] debug
+
+      const transaction = await this._neoContract.withdrawStake(amountParsed, index);
+
+      tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, transaction validated, waiting for blockchain confirmation...`)
+      updateTransaction({...tx, status:tx.status, message:tx.message});
+      console.log("[Withdraw debug]", tx.message); // [!] debug]
+
+      const receipt = await transaction.wait();
+      console.log("Withdraw transaction Done receipt : ", receipt); // [!] debug
+
+      tx = this._txSuccess(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, your wallet should be updated soon`)
+      updateTransaction({...tx, status:tx.status, message:tx.message});
+      console.log("[Withdraw debug]", tx.message); // [!] debug
+
+      await updateUI();
+      tx = this._txIdle(tx, "Ready for next transaction");
+      updateTransaction({...tx, status:tx.status, message:tx.message});
+      console.log("[Withdraw debug]", tx.message); // [!] debug
+
+
+    } catch (error) {
+      console.log("withdrawStake Error : ", (error as Error).message); // [!] debug
+      tx = this._txError(tx,`withdrawStake Error: ${(error as Error).message}`);
+      updateTransaction({...tx, status:tx.status, message:tx.message});
+      console.log("[Withdraw debug]", tx.message); // [!] debug
+    }
+
+
+  }
+
 
   private _txPending(tx: Tx, message?: string) {
     tx.status = TxStatus.PENDING;

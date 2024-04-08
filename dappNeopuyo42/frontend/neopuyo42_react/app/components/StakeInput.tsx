@@ -2,7 +2,9 @@ import { Tx, TxStatus } from "@/handler/neopuyo42Handler";
 import { Button, HStack,  Text, FormControl, FormLabel, 
          IconButton, NumberInputField, NumberInput, 
          NumberIncrementStepper, NumberInputStepper, 
-         NumberDecrementStepper } from "@chakra-ui/react";
+         NumberDecrementStepper, 
+         VStack,
+         Spacer} from "@chakra-ui/react";
 import { useState } from "react";
 import { RiDeleteBack2Line } from "react-icons/ri";
 import { NeoColors } from "tools/types/NeoColors";
@@ -58,7 +60,7 @@ export default function StakeInput({ stakeNeopuyo42, setTx, userBalance }: Props
   };
 
   return (
-    <FormControl onSubmit={() => _handleStakeSubmit} >
+    <FormControl>
       <FormLabel>
       <Text fontSize="xs" color={NeoColors.gray}>Stake some Neopuyo42 token</Text></FormLabel>
       <HStack alignItems="top">
