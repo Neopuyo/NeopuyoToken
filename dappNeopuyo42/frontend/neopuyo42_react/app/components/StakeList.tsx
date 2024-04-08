@@ -1,6 +1,5 @@
-import { Badge, Box, Card, CardBody, CardHeader, HStack, Heading, Spacer, Stack, StackDivider, Text, VStack,  } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardHeader, HStack, Heading, Spacer, Stack, StackDivider, Text, VStack,  } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import { useState } from "react";
 import { NeoColors } from "tools/types/NeoColors";
 import { Stake } from "tools/types/StakingSummary";
 import WithdrawInput from "./WithDrawInput";

@@ -2,9 +2,7 @@ import { Tx, TxStatus } from "@/handler/neopuyo42Handler";
 import { Button, HStack,  Text, FormControl, FormLabel, 
          IconButton, NumberInputField, NumberInput, 
          NumberIncrementStepper, NumberInputStepper, 
-         NumberDecrementStepper, 
-         VStack,
-         Spacer} from "@chakra-ui/react";
+         NumberDecrementStepper, } from "@chakra-ui/react";
 import { useState } from "react";
 import { RiDeleteBack2Line } from "react-icons/ri";
 import { NeoColors } from "tools/types/NeoColors";
