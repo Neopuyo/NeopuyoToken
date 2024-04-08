@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { loglog } from 'tools/loglog';
 
 export enum TxStatus {
   IDLE = 'idle',
@@ -33,32 +34,32 @@ export class Neopuyo42Handler {
       const amountParsed = ethers.parseEther(amount.toString());
       tx = this._txPending(tx, `Staking ${amount} Neo asked, valid transaction in Metamask to continue`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message); // [!] debug
 
       const transaction = await this._neoContract.stake(amountParsed);
       
       tx = this._txPending(tx, `Staking ${amount} Neo, transaction validated, waiting for blockchain confirmation...`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message); // [!] debug
 
 
       const receipt = await transaction.wait();
-      console.log("Stake transaction Done receipt : ", receipt); // [!] debug
+      loglog("Stake transaction Done receipt : ", receipt); // [!] debug
 
       tx = this._txSuccess(tx, `Staking ${amount} Neo, transaction confirmed, your wallet should be updated soon`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message); // [!] debug
 
       await updateUI();
       tx = this._txIdle(tx, "Ready for next transaction");
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message); // [!] debug
 
     } catch (error) {
-      console.log("stakeNeopuyo42 Error : ", (error as Error).message); // [!] debug
+      loglog("stakeNeopuyo42 Error : ", (error as Error).message); // [!] debug
       tx = this._txError(tx,`stakeNeopuyo42 Error: ${(error as Error).message}`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message); // [!] debug
     }
   }
 
@@ -73,32 +74,32 @@ export class Neopuyo42Handler {
       const amountParsed = ethers.parseEther(amount.toString());
       tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1} asked, valid transaction in Metamask to continue`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message); // [!] debug
 
       const transaction = await this._neoContract.withdrawStake(amountParsed, index);
 
       tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, transaction validated, waiting for blockchain confirmation...`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Withdraw debug]", tx.message); // [!] debug]
+      loglog("[Withdraw debug]", tx.message); // [!] debug]
 
       const receipt = await transaction.wait();
-      console.log("Withdraw transaction Done receipt : ", receipt); // [!] debug
+      loglog("Withdraw transaction Done receipt : ", receipt); // [!] debug
 
       tx = this._txSuccess(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, your wallet should be updated soon`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message); // [!] debug
 
       await updateUI();
       tx = this._txIdle(tx, "Ready for next transaction");
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message); // [!] debug
 
 
     } catch (error) {
-      console.log("withdrawStake Error : ", (error as Error).message); // [!] debug
+      loglog("withdrawStake Error : ", (error as Error).message); // [!] debug
       tx = this._txError(tx,`withdrawStake Error: ${(error as Error).message}`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      console.log("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message); // [!] debug
     }
 
 

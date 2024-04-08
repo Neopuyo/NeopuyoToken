@@ -1,6 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import { BrowserProvider, JsonRpcSigner, ethers } from "ethers";
 import { useCallback, useEffect, useState } from "react";
+import { loglog } from "tools/loglog";
 
 
 export interface IWeb3Props {
@@ -50,8 +51,6 @@ export const useWeb3Provider = () => {
         const signer = await provider.getSigner();
         const chain = Number((await provider.getNetwork()).chainId);
 
-        console.log("[into connectWallet] accounts = ", accounts); // [!] Debug
-
         setWeb3({
           ...web3,
           address: accounts[0],
@@ -63,10 +62,9 @@ export const useWeb3Provider = () => {
         });
 
         localStorage.setItem("isAuthenticated", "true");
-        console.log("connectWallet : User connected to metamask with :", accounts[0]);
       }
     } catch(error) {
-      console.log("connectWallet : ", (error as Error).message);
+      loglog("connectWallet : ", (error as Error).message);
       return toast({
         status: "error",
         position: "bottom-right",
@@ -77,7 +75,7 @@ export const useWeb3Provider = () => {
   }, [web3, toast]);
 
   const disconnect = () => {
-    console.log(`User ${web3.address} Disconnected from metamask`);
+    loglog(`User ${web3.address} Disconnected from metamask`);
     setWeb3(initialWeb3Props);
 
 
@@ -97,7 +95,7 @@ export const useWeb3Provider = () => {
     if (window.ethereum == null || typeof window.ethereum === "undefined") return;
 
     window.ethereum.on("accountsChanged", (accounts: string[]) => {
-      console.log("[Event] accountsChanged => accounts = ", accounts); // [!] Debug
+      loglog("[Event] accountsChanged => accounts = ", accounts);
       if (accounts.length === 0) {
         disconnect();
       } else {
@@ -109,7 +107,7 @@ export const useWeb3Provider = () => {
     // Use 'chainChanged' instead.
     // For more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged
     window.ethereum.on("chainChanged", (network: string) => {
-      console.log("[Event] chainChanged => chainId :", Number(network)); // [!] Debug
+      loglog("[Event] chainChanged => chainId :", Number(network)); // [!] Debug
       setWeb3({ ...web3, chainID: Number(network) });
     });
 
@@ -129,7 +127,7 @@ export const useWeb3Provider = () => {
       method: 'net_version',
     });
     if (networkID !== BSC_CHAIN_ID) {
-      console.log("Wrong networkID : ", networkID, "Ask switching...");
+      loglog("Wrong networkID : ", networkID, "Ask switching...");
       _switchChain();
     }
   }

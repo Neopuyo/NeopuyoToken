@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { IWeb3Context, useWeb3Context } from "../context/Web3Context";
 import { getNeopuyo42ContractABI, getNeopuyo42ContractAddress} from "tools/getNeopuyo42ContractDatas";
 import { Neopuyo42Handler } from "@/handler/neopuyo42Handler";
+import { loglog } from "tools/loglog";
 
 // [N] : a React Custom hook 
 // Remember hooks should not be async functions (the async part here should be in useMemo part)
@@ -12,7 +13,6 @@ const useNeopuyo42Contract = () => {
   return useMemo(
     async () => {
       try {
-        console.log("useNeopuyo42Contract useMemo hook called"); // [!] debug, check ig memo used is ok
         const promise = getNeopuyo42ContractABI();
         const address = getNeopuyo42ContractAddress();
         const abi = await promise;
@@ -21,7 +21,7 @@ const useNeopuyo42Contract = () => {
         const neopuyo42Handler = new Neopuyo42Handler(contract);
         return neopuyo42Handler;
       } catch (error) {
-        console.error("useNeopuyo42Contract error: ", (error as Error).message);
+        loglog("useNeopuyo42Contract error: ", (error as Error).message);
         return null;
       }
     },[web3.signer]

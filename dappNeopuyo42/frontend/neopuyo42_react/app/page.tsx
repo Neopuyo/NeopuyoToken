@@ -11,27 +11,22 @@ import StakeInput from "./components/StakeInput";
 import { Stake, StakingSummary } from "tools/types/StakingSummary";
 import StakeList from "./components/StakeList";
 import { NeoColors } from "tools/types/NeoColors";
+import { loglog } from "tools/loglog";
 
 
 interface MetamaskData {
-  // accounts: string[];
   totalSupply: string;
   accountBalance: string;
   accountTotalStake: string;
   stakes: Stake[];
   isTokenOwner: boolean;
   neopuyo42Contract: ethers.Contract | null;
-  // signer: ethers.Signer | null;
-  // provider: ethers.JsonRpcProvider | null; // hardhat local networtk
-  // provider : ethers.BrowserProvider | null; // testnet
 }
 
 export default function Home() {
 
   const {
-    connectWallet,
-    disconnect,
-    web3: { isAuthenticated, address, chainID, accounts, provider, signer },
+    web3: { isAuthenticated, address, accounts, provider, signer },
   } = useWeb3Context() as IWeb3Context;
 
   const neopuyo42Handler = useNeopuyo42Contract();
@@ -57,9 +52,8 @@ export default function Home() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("METAMASK CONNECTED");
       if (!neopuyo42Handler) {
-        console.log("neopuyo42handler is null");
+        loglog("neopuyo42handler is null");
         return;
       }
       getContract();
@@ -78,13 +72,12 @@ export default function Home() {
     try {
       const handler = await neopuyo42Handler;
       if (!handler) {
-        console.log("neopuyo42Contract handler is not available");
+        loglog("neopuyo42Contract handler is not available");
         return;
       }
-      console.log("neopuyo42Contract handler is ready -> ", handler);
       setMeta((prevState) => ({ ...prevState, neopuyo42Contract: handler.neoContract }));
     } catch (error) {
-      console.error("getContract Error : ", (error as Error).message);
+      loglog("getContract Error : ", (error as Error).message);
     }
   }
 
@@ -94,25 +87,19 @@ export default function Home() {
 
         await meta.neopuyo42Contract!.totalSupply().then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
-          console.log("totalSupply = ",rawValue, " => ", formatedValue); // [!] debug
           setMeta((prevState) => ({ ...prevState, totalSupply: formatedValue }));
         });
         
         await meta.neopuyo42Contract!.balanceOf(address).then((rawValue) => {
           const formatedValue = ethers.formatEther(rawValue);
-          console.log("accountBalance = ",rawValue, " => ", formatedValue); // [!] debug
           setMeta((prevState) => ({ ...prevState, accountBalance: formatedValue }));
         });
         
         await meta.neopuyo42Contract!.hasStake(address).then((stackingSummary: StakingSummary) => {
           const stakes:Stake[] = stackingSummary.stakes;
           stakes.forEach((stake: Stake) => {
-            console.log("stake = ",stake); // [!] debug
           });
           const formatedValue = ethers.formatEther(stackingSummary.total_amount);
-          console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
-          console.log("stackingSummary = ",stackingSummary); // [!] debug
-
           setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue, stakes: stakes}));
         });
 
@@ -126,17 +113,12 @@ export default function Home() {
         throw new Error("Can't getWalletInfos from Metamask.");
       }
     } catch (error) {
-      console.log("getWalletInfos Error : ", (error as Error).message);
+      loglog("getWalletInfos Error : ", (error as Error).message);
     }
   }
   
   function _contractSetupError(): boolean {
     const isError = (!meta.neopuyo42Contract || !provider || !signer || !neopuyo42Handler );
-    // [!] DEBUG
-    if (!meta.neopuyo42Contract) { console.log("[setUp] !meta.neopuyo42Contract");}
-    if (!provider)               { console.log("[setUp] !provider");}
-    if (!signer)                 { console.log("[setUp] !signer");}
-    if (!neopuyo42Handler)       { console.log("[setUp] !neopuyo42Handler");}
     if (isError) {
       setTx({status:TxStatus.ERROR, message:"Error in fetching Neopuyo42 token contract, please try later."});
     }
@@ -175,7 +157,6 @@ export default function Home() {
 
   function _getTxMessage(): string {
     const maxLength = 200;
-
     if (tx.message.length <= maxLength) {
       return tx.message;
     }

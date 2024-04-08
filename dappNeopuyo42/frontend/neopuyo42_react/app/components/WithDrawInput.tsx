@@ -37,7 +37,7 @@ export default function WithdrawInput({ stakeAmount, setTx, withdrawStake, index
       setTx({status: TxStatus.ERROR, message: `You can't withdraw more than ${stakeAmount} in stake${index}`});
       return; 
     }
-    console.log(`Withdraw of ${withdrawAmount} from stake${index} asked`);
+    loglog(`Withdraw of ${withdrawAmount} from stake${index} asked`);
     withdrawStake(withdrawAmount, index);
   };
 
