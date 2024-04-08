@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react"
 import { ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
-import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider } from "@chakra-ui/react";
+import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
 import useNeopuyo42Contract from "./hooks/useNeopuyo42Contract";
 import { BiStar } from "react-icons/bi";
 import { Tx, TxStatus } from "./handler/neopuyo42Handler";
 import StakeInput from "./components/StakeInput";
-import { StakingSummary } from "tools/types/StakingSummary";
+import { Stake, StakingSummary } from "tools/types/StakingSummary";
+import StakeList from "./components/StakeList";
+import { NeoColors } from "tools/types/NeoColors";
 
 
 interface MetamaskData {
@@ -16,6 +18,7 @@ interface MetamaskData {
   totalSupply: string;
   accountBalance: string;
   accountTotalStake: string;
+  stakes: Stake[];
   isTokenOwner: boolean;
   neopuyo42Contract: ethers.Contract | null;
   // signer: ethers.Signer | null;
@@ -39,6 +42,7 @@ export default function Home() {
     totalSupply: "0",
     accountBalance: "0",
     accountTotalStake: "0",
+    stakes: [],
     isTokenOwner: false,
     neopuyo42Contract: null,
   });
@@ -93,10 +97,15 @@ export default function Home() {
         });
         
         await meta.neopuyo42Contract!.hasStake(address).then((stackingSummary: StakingSummary) => {
+          const stakes:Stake[] = stackingSummary.stakes;
+          stakes.forEach((stake: Stake) => {
+            console.log("stake = ",stake); // [!] debug
+          });
           const formatedValue = ethers.formatEther(stackingSummary.total_amount);
           console.log("stackingSummary.total_amount = ",stackingSummary.total_amount, " => ", formatedValue); // [!] debug
           console.log("stackingSummary = ",stackingSummary); // [!] debug
-          setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue }));
+
+          setMeta((prevState) => ({ ...prevState, accountTotalStake: formatedValue, stakes: stakes}));
         });
 
         await meta.neopuyo42Contract!.getOwner().then((ownerAddress: string) => {
@@ -139,13 +148,13 @@ export default function Home() {
   function _getTxColor(): string {
     switch (tx.status) {
       case TxStatus.IDLE:
-        return "gray.400";
+        return NeoColors.gray;
       case TxStatus.PENDING:
-        return "yellow.500";
+        return NeoColors.yellow;
       case TxStatus.SUCCESS:
-        return "teal.400";
+        return NeoColors.teal;
       case TxStatus.ERROR:
-        return "red.300";
+        return NeoColors.red;
     }
   }
 
@@ -197,32 +206,32 @@ export default function Home() {
           <Stack divider={<StackDivider />} spacing='4'>
             <Box>
               <HStack alignItems="baseline">
-                <Text fontSize="xs" color="gray.400">Account Address</Text>
+                <Text fontSize="xs" color={NeoColors.gray}>Account Address</Text>
                 {meta.isTokenOwner && <Icon  as={BiStar} color="yellow.400"/>}
               </HStack>
               <Text fontSize="xl">{address}</Text>
             </Box>
 
             <Box>
-              <Text fontSize="xs" color="gray.400">Neopuyo42 total token</Text>
+              <Text fontSize="xs" color={NeoColors.gray}>Neopuyo42 total token</Text>
               <HStack>
-                <Text fontSize="xl" color="gray.400">{meta.totalSupply}</Text>
-                <Heading size="md" color="teal.400">Neo</Heading>
+                <Text fontSize="xl" color={NeoColors.gray}>{meta.totalSupply}</Text>
+                <Heading size="md" color={NeoColors.teal}>Neo</Heading>
               </HStack>
             </Box>
 
             <Box textAlign="right">
-              <Text fontSize="xs" color="gray.400">
-                my Neopuyo42
+              <Text fontSize="xs" color={NeoColors.gray}>
+                my Neopuyo42 balance
               </Text>
-              <Heading size="md" color="teal.400">{`${meta.accountBalance} Neo`}</Heading>
+              <Heading size="md" color={NeoColors.teal}>{`${meta.accountBalance} Neo`}</Heading>
             </Box>
 
             <Box textAlign="right">
-              <Text fontSize="xs" color="gray.400">
-                my Stakes
+              <Text fontSize="xs" color={NeoColors.gray}>
+                my Stakes total amount
               </Text>
-              <Heading size="md" color="teal.400">{`${meta.accountTotalStake} Neo`}</Heading>
+              <Heading size="md" color={NeoColors.teal}>{`${meta.accountTotalStake} Neo`}</Heading>
             </Box>
           </Stack>
         </CardBody>
@@ -230,19 +239,37 @@ export default function Home() {
         <Divider />
 
         <CardFooter justifyContent="flex-end">
-          <StakeInput 
-            stakeNeopuyo42={stakeNeopuyo42}
-            setTx={setTx}
-            userBalance={meta.accountBalance}
-          />
+          <VStack alignItems="flex-start">
+            <Box textAlign="left">
+              <Text fontSize="md" fontWeight="bold" color={NeoColors.teal}>My stakes</Text>
+            </Box>
+            <Tabs align='end' variant='enclosed' isLazy minWidth={500}>
+              <TabList color={NeoColors.gray}>
+                <Tab _selected={{ color: NeoColors.teal }}>add</Tab>
+                <Tab _selected={{ color: NeoColors.teal }}>list</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel height={400}>
+                  <StakeInput 
+                    stakeNeopuyo42={stakeNeopuyo42}
+                    setTx={setTx}
+                    userBalance={meta.accountBalance}
+                  />
+                </TabPanel>
+                <TabPanel height={400} overflowY={"scroll"}>
+                  <StakeList stakes={meta.stakes} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </VStack>
         </CardFooter>
 
       </Card>
 
-      <Card borderWidth="4px" borderRadius="md" borderColor="yellow.400">
+      <Card borderWidth="4px" borderRadius="md" borderColor={NeoColors.yellow}>
 
         <CardHeader>
-          <Heading size='md' fontWeight="bold" color="yellow.400">Transaction</Heading>
+          <Heading size='md' fontWeight="bold" color={NeoColors.yellow}>Transaction</Heading>
         </CardHeader>
 
         <CardBody>

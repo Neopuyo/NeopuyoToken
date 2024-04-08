@@ -5,6 +5,7 @@ import { Button, HStack,  Text, FormControl, FormLabel,
          NumberDecrementStepper } from "@chakra-ui/react";
 import { useState } from "react";
 import { RiDeleteBack2Line } from "react-icons/ri";
+import { NeoColors } from "tools/types/NeoColors";
 
 type Props = {
   stakeNeopuyo42: (stakeAmount: number) => Promise<void>;
@@ -59,7 +60,7 @@ export default function StakeInput({ stakeNeopuyo42, setTx, userBalance }: Props
   return (
     <FormControl onSubmit={() => _handleStakeSubmit} >
       <FormLabel>
-      <Text fontSize="xs" color="gray.400">Stake some Neopuyo42 token</Text></FormLabel>
+      <Text fontSize="xs" color={NeoColors.gray}>Stake some Neopuyo42 token</Text></FormLabel>
       <HStack alignItems="top">
         <FormControl>
           <NumberInput max={STAKE_MAX} min={0}
@@ -73,7 +74,7 @@ export default function StakeInput({ stakeNeopuyo42, setTx, userBalance }: Props
           </NumberInput>
         </FormControl>
         <IconButton icon={<RiDeleteBack2Line size={24} style={{ color: 'gray' }}/>} onClick={_clearInput} aria-label={""} />
-        <Button onClick={_handleStakeSubmit} variant="solid" bg={_isStakeAmountInvalid ? "gray.400" : "yellow.400"} color="white" gap={2}  >
+        <Button onClick={_handleStakeSubmit} variant="solid" bg={_isStakeAmountInvalid ? NeoColors.gray : NeoColors.yellow } color={NeoColors.white} gap={2}  >
           <Text fontSize="xl" fontWeight="bold" paddingTop="4px">Stake</Text>
         </Button>
       </HStack>
