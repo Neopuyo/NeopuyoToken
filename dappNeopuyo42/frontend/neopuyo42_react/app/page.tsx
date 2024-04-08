@@ -35,6 +35,7 @@ export default function Home() {
   } = useWeb3Context() as IWeb3Context;
 
   const neopuyo42Handler = useNeopuyo42Contract();
+  const [walletDetected, setWalletDetected] = useState(false);
 
   const [tx, setTx] = useState<Tx>({status: TxStatus.IDLE, message: "No transaction in progress"});
 
@@ -46,6 +47,13 @@ export default function Home() {
     isTokenOwner: false,
     neopuyo42Contract: null,
   });
+
+  useEffect(() => {
+    if (walletDetected) { return; }
+    if (typeof window !== 'undefined' && window.ethereum !== undefined) {
+      setWalletDetected(true);
+    }
+  }, [isAuthenticated]); 
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -176,7 +184,7 @@ export default function Home() {
   }
 
   // ----------------------------------------------------render
-  if (window.ethereum === undefined) { 
+  if (!walletDetected) { 
     return (
       <VStack>
         <Text fontSize="xl" fontWeight="bold" color="white">No dapp wallet detected in your browser</Text>
