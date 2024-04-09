@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { ethers } from "ethers";
 import { useWeb3Context, IWeb3Context } from "./context/Web3Context";
 import { HStack, Icon, VStack, Text, CardBody, Box, Card, Heading, CardHeader, Stack, StackDivider, CardFooter, Divider, Tabs, TabList, Tab, TabPanels, TabPanel, Spacer } from "@chakra-ui/react";
@@ -43,45 +43,7 @@ export default function Home() {
     neopuyo42Contract: null,
   });
 
-  useEffect(() => {
-    if (walletDetected) { return; }
-    if (typeof window !== 'undefined' && window.ethereum !== undefined) {
-      setWalletDetected(true);
-    }
-  }, [isAuthenticated]); 
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      if (!neopuyo42Handler) {
-        loglog("neopuyo42handler is null");
-        return;
-      }
-      getContract();
-    }
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (meta.neopuyo42Contract) {
-      getMetamaskInfos();
-    }
-  }, [meta.neopuyo42Contract, address, accounts]);
-
-  // ----------------------------------------------------------
-
-  async function getContract() {
-    try {
-      const handler = await neopuyo42Handler;
-      if (!handler) {
-        loglog("neopuyo42Contract handler is not available");
-        return;
-      }
-      setMeta((prevState) => ({ ...prevState, neopuyo42Contract: handler.neoContract }));
-    } catch (error) {
-      loglog("getContract Error : ", (error as Error).message);
-    }
-  }
-
-  async function getMetamaskInfos() {
+  const getMetamaskInfos = useCallback(async () => {
     try {
       if (meta.neopuyo42Contract) {
 
@@ -115,8 +77,47 @@ export default function Home() {
     } catch (error) {
       loglog("getWalletInfos Error : ", (error as Error).message);
     }
-  }
-  
+  }, [address, meta.neopuyo42Contract]);
+
+  useEffect(() => {
+    if (walletDetected) { return; }
+    if (typeof window !== 'undefined' && window.ethereum !== undefined) {
+      setWalletDetected(true);
+    }
+  }, [isAuthenticated, walletDetected]); 
+
+  useEffect(() => {
+    async function getContract() {
+      try {
+        const handler = await neopuyo42Handler;
+        if (!handler) {
+          loglog("neopuyo42Contract handler is not available");
+          return;
+        }
+        setMeta((prevState) => ({ ...prevState, neopuyo42Contract: handler.neoContract }));
+      } catch (error) {
+        loglog("getContract Error : ", (error as Error).message);
+      }
+    }
+    
+    if (isAuthenticated) {
+      if (!neopuyo42Handler) {
+        loglog("neopuyo42handler is null");
+        return;
+      }
+      getContract();
+    }
+  }, [isAuthenticated, neopuyo42Handler]);
+
+  useEffect(() => {
+    if (meta.neopuyo42Contract) {
+      getMetamaskInfos();
+    }
+  }, [meta.neopuyo42Contract, address, accounts, getMetamaskInfos]);
+
+  // ----------------------------------------------------------
+
+
   function _contractSetupError(): boolean {
     const isError = (!meta.neopuyo42Contract || !provider || !signer || !neopuyo42Handler );
     if (isError) {

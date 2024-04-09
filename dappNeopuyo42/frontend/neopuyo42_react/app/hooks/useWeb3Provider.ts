@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react";
 import { BrowserProvider, JsonRpcSigner, ethers } from "ethers";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { loglog } from "tools/loglog";
 
 
@@ -17,20 +17,38 @@ export const useWeb3Provider = () => {
 
   const BSC_CHAIN_ID = '97';
 
-  const initialWeb3Props = {
+  const initialWeb3Props = useMemo(() => ({
     address: null,
     chainID: null,
     accounts: [],
     signer: null,
     provider: null,
     isAuthenticated: false,
-  }
+  }), []);
 
   const toast = useToast();
   const [web3, setWeb3] = useState<IWeb3Props>(initialWeb3Props);
 
   const connectWallet = useCallback(async () => {
     if (web3.isAuthenticated) return;
+
+    async function _checkNetwork() {
+      const networkID = await window.ethereum.request({
+        method: 'net_version',
+      });
+      if (networkID !== BSC_CHAIN_ID) {
+        loglog("Wrong networkID : ", networkID, "Ask switching...");
+        _switchChain();
+      }
+    }
+  
+    async function _switchChain() {
+      const chainIdHex = `0x${parseInt(BSC_CHAIN_ID).toString(16)}`;
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainIdHex }],
+      });
+    }
 
     try {
       if (!window.ethereum) {
@@ -74,13 +92,10 @@ export const useWeb3Provider = () => {
     }
   }, [web3, toast]);
 
-  const disconnect = () => {
-    loglog(`User ${web3.address} Disconnected from metamask`);
+  const disconnect = useCallback(() => {
     setWeb3(initialWeb3Props);
-
-
     localStorage.removeItem("isAuthenticated");
-  };
+  }, [initialWeb3Props]);
 
   useEffect(() => {
     if (window.ethereum == null || typeof window.ethereum === "undefined") return;
@@ -103,9 +118,6 @@ export const useWeb3Provider = () => {
       }
     });
     
-    // [N] MetaMask warning: The event 'networkChanged' is deprecated and may be removed in the future.
-    // Use 'chainChanged' instead.
-    // For more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged
     window.ethereum.on("chainChanged", (network: string) => {
       loglog("[Event] chainChanged => chainId :", Number(network)); // [!] Debug
       setWeb3({ ...web3, chainID: Number(network) });
@@ -114,30 +126,12 @@ export const useWeb3Provider = () => {
     return () => {
       window.ethereum.removeAllListeners();
     };
-  }, [web3]);
+  }, [disconnect, web3]);
 
   return {
     connectWallet,
     disconnect,
     web3,
   };
-
-  async function _checkNetwork() {
-    const networkID = await window.ethereum.request({
-      method: 'net_version',
-    });
-    if (networkID !== BSC_CHAIN_ID) {
-      loglog("Wrong networkID : ", networkID, "Ask switching...");
-      _switchChain();
-    }
-  }
-
-  async function _switchChain() {
-    const chainIdHex = `0x${parseInt(BSC_CHAIN_ID).toString(16)}`;
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: chainIdHex }],
-    });
-  }
 
 }

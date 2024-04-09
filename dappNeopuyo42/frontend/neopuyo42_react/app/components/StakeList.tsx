@@ -34,10 +34,10 @@ export default function StakeList({ stakes, setTx, withdrawStake }: Props) {
     const diffHoursRemaining = diffHours % 24;
 
     const dateText = () => {
-      if (diffDays > 0) {
-        return `from ${diffDays} days`;
+      if (diffDays > 1) {
+        return `from ${diffDays} days ago`;
       } else {
-        return `from ${diffHoursRemaining} hours`;
+        return `from ${diffHoursRemaining} hours ago`;
       }
     }
 

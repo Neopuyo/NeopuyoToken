@@ -26,10 +26,11 @@ contract Stakeable {
     /* attributes */
     Stakeholder[] internal stakeholders;
 
-    mapping(address => uint256) internal indexOf; // to 
+    // keeping index to avoid iterating array -> save gas 
+    mapping(address => uint256) internal indexOf;
 
     constructor() {
-        stakeholders.push(); // push empty item to avoid issue of index - 1 [?] still needed [?]
+        stakeholders.push();
     }
 
 
@@ -38,10 +39,10 @@ contract Stakeable {
 
     /* internal methods */
     function _addStakeholder(address newStake) internal returns (uint256) {
-        stakeholders.push(); // making a slot for the new item
+        stakeholders.push();
         uint256 index = stakeholders.length - 1;
         stakeholders[index].user = newStake;
-        indexOf[newStake] = index; // keeping index to avoid iterating array -> save gas 
+        indexOf[newStake] = index;
         return index;
     }
 
@@ -93,13 +94,11 @@ contract Stakeable {
         uint256 totalStakeAmount; 
         // Keep a summary in memory since we need to calculate this
         StakingSummary memory summary = StakingSummary(0, stakeholders[indexOf[staker]].address_stakes);
-        // Itterate all stakes and grab amount of stakes
         for (uint256 s = 0; s < summary.stakes.length; s += 1){
            uint256 availableReward = calculateStakeReward(summary.stakes[s]);
            summary.stakes[s].claimable = availableReward;
            totalStakeAmount = totalStakeAmount+summary.stakes[s].amount;
        }
-       // Assign calculate amount to summary
        summary.total_amount = totalStakeAmount;
         return summary;
     }

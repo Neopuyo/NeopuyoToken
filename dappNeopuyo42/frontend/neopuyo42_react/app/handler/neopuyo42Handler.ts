@@ -34,32 +34,33 @@ export class Neopuyo42Handler {
       const amountParsed = ethers.parseEther(amount.toString());
       tx = this._txPending(tx, `Staking ${amount} Neo asked, valid transaction in Metamask to continue`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message);
 
       const transaction = await this._neoContract.stake(amountParsed);
       
       tx = this._txPending(tx, `Staking ${amount} Neo, transaction validated, waiting for blockchain confirmation...`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message);
 
 
       const receipt = await transaction.wait();
-      loglog("Stake transaction Done receipt : ", receipt); // [!] debug
+      loglog("Stake transaction Done receipt : ", receipt);
 
       tx = this._txSuccess(tx, `Staking ${amount} Neo, transaction confirmed, your wallet should be updated soon`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message);
 
       await updateUI();
       tx = this._txIdle(tx, "Ready for next transaction");
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Stake debug]", tx.message); // [!] debug
+      loglog("[Stake debug]", tx.message);
 
     } catch (error) {
-      loglog("stakeNeopuyo42 Error : ", (error as Error).message); // [!] debug
-      tx = this._txError(tx,`stakeNeopuyo42 Error: ${(error as Error).message}`);
-      updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Stake debug]", tx.message); // [!] debug
+      if (error instanceof Error && error.message.includes('user rejected action')) {
+        this._catchError(`Transaction Staking ${amount} Neo rejected by user`, tx, updateTransaction);
+      } else {
+        this._catchError(`stakeNeopuyo42 Error : ${(error as Error).message}`, tx, updateTransaction);
+      }
     }
   }
 
@@ -74,37 +75,40 @@ export class Neopuyo42Handler {
       const amountParsed = ethers.parseEther(amount.toString());
       tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1} asked, valid transaction in Metamask to continue`);
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message);
 
       const transaction = await this._neoContract.withdrawStake(amountParsed, index);
 
       tx = this._txPending(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, transaction validated, waiting for blockchain confirmation...`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Withdraw debug]", tx.message); // [!] debug]
+      loglog("[Withdraw debug]", tx.message);
 
       const receipt = await transaction.wait();
-      loglog("Withdraw transaction Done receipt : ", receipt); // [!] debug
+      loglog("Withdraw transaction Done receipt : ", receipt);
 
       tx = this._txSuccess(tx, `Withdrawing ${amount} Neo from stake_${index + 1}, your wallet should be updated soon`)
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Withdraw debug]", tx.message); // [!] debug
+      loglog("[Withdraw debug]", tx.message);
 
       await updateUI();
       tx = this._txIdle(tx, "Ready for next transaction");
       updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Withdraw debug]", tx.message); // [!] debug
-
+      loglog("[Withdraw debug]", tx.message);
 
     } catch (error) {
-      loglog("withdrawStake Error : ", (error as Error).message); // [!] debug
-      tx = this._txError(tx,`withdrawStake Error: ${(error as Error).message}`);
-      updateTransaction({...tx, status:tx.status, message:tx.message});
-      loglog("[Withdraw debug]", tx.message); // [!] debug
+      if (error instanceof Error && error.message.includes('user rejected action')) {
+        this._catchError(`Transaction Withdrawing ${amount} Neo from stake_${index + 1} rejected by user`, tx, updateTransaction);
+      } else {
+        this._catchError(`withdrawStake Error : ${(error as Error).message}`, tx, updateTransaction);
+      }
     }
-
-
   }
 
+  private _catchError(errorMsg: string, tx: Tx, updateTransaction: TxCallback) {
+    tx = this._txError(tx, errorMsg);
+    updateTransaction({...tx, status:tx.status, message:tx.message});
+    loglog("[Stake debug]", tx.message);
+  }
 
   private _txPending(tx: Tx, message?: string) {
     tx.status = TxStatus.PENDING;
