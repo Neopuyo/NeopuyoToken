@@ -15,8 +15,10 @@ I chose **Binance** plateform because :
   - this subject is the production of a partnership between 42 and BNB Chain
   - looks beginner friendly with tutorials & documentation
   - supports a lot of language like `GO`, `Java`, `Javascript`, `C++,` `C#`, `Python`
-  - can use `NodeJS` framwork *like ganache and truffle*
-  - EVM (Ethereum Virtual Machine) compatible, support **Ethereum** toolings including **Metamask**, **Remix**
+  - can use `NodeJS` framworks *like ganache and truffle or later hardhat*
+  - EVM (Ethereum Virtual Machine) compatible, support **Ethereum** toolings including **Metamask**, **Remix**  
+&emsp;  **Ethereum** compatibility looks really nice to a beginner.
+&emsp;  The Metamask wallet has a lot of documentation and seems to be the most used one.
 
 <br/>
 
@@ -26,11 +28,11 @@ I chose **Binance** plateform because :
 
 <br/>
 
-  ## **3. token deployment**
+  ## **3. Neopuyo42 token deployment**
 
-| The smart contract address                |
+| The Neopuyo42 smart contract address                |
 |-------------------------------------------|
-| 0xf737c4F591D9C48B9faD11a4aD90dFC88ac44c09|
+| 0xd3bc037d57c93ad8ab1d8519049d52a7510cc5fa|
 
   
 | The network used | |
@@ -44,19 +46,19 @@ Block explorer URL:| https://bscscan.com/
   
 | The `test` network used | |
 | -------------------:| ------------|
-|     Network name: | BNB Chain Testnet
-Network URL: | https://data-seed-prebsc-1-s1.binance.org:8545/
-Chain ID: | 97
-Currency symbol:| tBNB
-Block explorer URL:| https://testnet.bscscan.com
+|     Network name | BNB Chain Testnet
+Network URL | https://data-seed-prebsc-1-s1.binance.org:8545/
+Chain ID | 97
+Currency symbol| tBNB
+Block explorer URL| https://testnet.bscscan.com
+tBNB FAUCET| [https://testnet.binance.org/faucet-smart](https://testnet.binance.org/faucet-smart)  
+All Bsc RPC| [Follow this link](https://docs.bnbchain.org/docs/BSCtestnet/)  
 
-To ask tBNB: [https://testnet.binance.org/faucet-smart](https://testnet.binance.org/faucet-smart)
-All Bsc RPC [here](https://docs.bnbchain.org/docs/BSCtestnet/)
-*see [howToDeployNeopuyo42Token](./deploy/howToDeployNeopuyo42Token.md) for further details*
+> Go to [howToDeployNeopuyo42Token](./deploy/howToDeployNeopuyo42Token.md) for further deployment details
 
 <br/>
 
-## **4. what Neopuyo42Token represents**
+## **4. What Neopuyo42Token represents**
 
 > a clear understanding of how Neopuyo42Token will be used and what
 it will represent

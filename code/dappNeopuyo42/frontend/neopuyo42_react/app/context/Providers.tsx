@@ -1,7 +1,7 @@
 "use client";
 
 import { ChakraProvider } from "@chakra-ui/react";
-import Web3ContextProvider from "../context/Web3Context";
+import Web3ContextProvider from "./Web3Context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 
