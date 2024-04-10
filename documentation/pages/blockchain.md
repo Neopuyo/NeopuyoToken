@@ -1,6 +1,7 @@
 # **Blockchain**
 
-[< Table of contents](../tokenizerDocumentation.md)
+[< Table of contents](../tokenizerDocumentation.md)  
+[< ReadMe](../../README.md)
 
 > Blockchain is a **trustless**, **immutable**, **distributed** **ledger** of **information**
 
@@ -98,4 +99,5 @@ Play around with fake money and get familiar with the wallet.
 
 <br/>
 
-[< Table of contents](../tokenizerDocumentation.md)
+[< Table of contents](../tokenizerDocumentation.md)  
+[< ReadMe](../../README.md)

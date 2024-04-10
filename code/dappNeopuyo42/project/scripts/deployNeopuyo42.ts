@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  // Récupère l'adresse du compte à utiliser pour le déploiement
+  // Retreive the adrress of the deployer, the owner of the contract
   const [deployer] = await ethers.getSigners();
   console.log("Checking ethers.getSigners() : ", deployer.address);
 

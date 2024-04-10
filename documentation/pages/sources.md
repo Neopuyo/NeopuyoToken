@@ -1,19 +1,20 @@
-# Sources and french lexic
+# Sources - Lexicon Fr
 
 [< Table of contents](../tokenizerDocumentation.md)
 
-## **Vocabulary memo 🇫🇷**
+## **Lexicon 🇫🇷**
 
-| English                              | French                             |
-| :----------------------------------- | :--------------------------------- |
-| **to issue**                         | émettre                            |
-| **an asset**                         | un actif                           |
-| **fungible**                         | fongible                           |
-| **ownership**                        | propriété                          |
-| **underlying**                       | sous-jacent                        |
-| **a stake in a company**             | une part dans une entreprise       |
-| **stake**                            | un enjeu / mettre en jeu           |
-| **recipient**                        | destinataire                       |
+| English                              | French                                                      |
+| :----------------------------------- | :---------------------------------------------------------- |
+| **to issue**                         | émettre                                                     |
+| **an asset**                         | un actif                                                    |
+| **fungible**                         | fongible                                                    |
+| **ownership**                        | propriété                                                   |
+| **underlying**                       | sous-jacent                                                 |
+| **a stake in a company**             | une part dans une entreprise                                |
+| **stake**                            | un enjeu / mettre en jeu                                    |
+| **recipient**                        | destinataire                                                |
+| **a pledge**                         | une promesse sollenelle / engagement                        |
 
 
 ---
