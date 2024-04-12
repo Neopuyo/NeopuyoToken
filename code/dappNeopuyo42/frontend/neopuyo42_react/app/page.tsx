@@ -68,6 +68,8 @@ export default function Home() {
         await meta.neopuyo42Contract!.getOwner().then((ownerAddress: string) => {
           if (address && address.toLowerCase() === ownerAddress.toLowerCase()) {
             setMeta((prevState) => ({ ...prevState, isTokenOwner: true }));
+          } else {
+            setMeta((prevState) => ({ ...prevState, isTokenOwner: false }));
           }
         });
 
@@ -204,7 +206,8 @@ export default function Home() {
             <Box>
               <HStack alignItems="baseline">
                 <Text fontSize="xs" color={NeoColors.gray}>Account Address</Text>
-                {meta.isTokenOwner && <Icon  as={BiStar} color="yellow.400"/>}
+                {meta.isTokenOwner && <Icon  as={BiStar} color={NeoColors.yellow}/>}
+                {meta.isTokenOwner && <Text fontSize="xs" color={NeoColors.yellow}>owner</Text>}
               </HStack>
               <Text fontSize="xl">{address}</Text>
             </Box>
