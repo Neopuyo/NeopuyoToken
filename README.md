@@ -3,12 +3,13 @@
 > **What are we talking about here ?**  
 > The aim of this project is to **deploy** a **token** *called Neopuyo42* on a **blockchain decentralized network**
 
-## Shortcuts
-  - [**Project overview**](#project-overview)
-  - [**Choices made**](#choices-made)
-  - [**Deployment sheet**](#deployment-sheet)
-  - [**What Neopuyo42Token represents**](#what-neopuyo42token-represents)
-  - [**`Project documentation` table of contents**](./documentation/tokenizerDocumentation.md)
+## Shortcuts  
+  - [**Project overview**](#project-overview)  
+  - [**Choices made**](#choices-made)  
+  - [**Deployment sheet**](#deployment-sheet)  
+  - [**What Neopuyo42 Token represents**](#what-neopuyo42token-represents)  
+  - [**`Project and Dapp documentation`**](./documentation/tokenizerDocumentation.md)  
+  - [**`Token Deployment guide`**](./deploy/howToDeployNeopuyo42Token.md)
 
 
 ## Project overview
@@ -132,6 +133,10 @@ With that address you can publicly access on all data stocked on the blockchaine
 
 ## **Choices made**
 
+[< Go back to top](#neopuyo42-token-project---overview)
+
+<br/>
+
 **🔻 Blockchain**  
 
 > First and foremost, i needed to choose a **blockchain platform** that supports the
@@ -172,13 +177,17 @@ And later, i discovered that the team working on these two projects were migrati
 
 <br/>
 
-  ## **Deployment sheet**
+## **Deployment sheet**
+
+[< Go back to top](#neopuyo42-token-project---overview)
+
+<br/>
 
 | The Neopuyo42 smart contract address                |
 |------------------------------------------- |
 | 0xd3bc037d57c93ad8ab1d8519049d52a7510cc5fa |
 
-  
+
 | The network used | |
 | -------------------:| ------------|
 |     Network name: | BNB Chain
@@ -187,7 +196,7 @@ Chain ID: | 56
 Currency symbol:| BNB
 Block explorer URL:| https://bscscan.com/
 
-  
+
 | The `test` network used | |
 | -------------------:| ------------|
 |     Network name | BNB Chain Testnet
@@ -204,8 +213,11 @@ All Bsc RPC| [Follow this link](https://docs.bnbchain.org/docs/BSCtestnet/)
 
 ## **What Neopuyo42Token represents**
 
-> How Neopuyo42Token will be used and what
-it will represent
+[< Go back to top](#neopuyo42-token-project---overview)
+
+<br/>
+
+> Neopuyo42 Token represents a simple currency
 
 | Neopuyo42 Token             |                                 |
 | ----------------------------| --------------------------------|
