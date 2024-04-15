@@ -1,6 +1,6 @@
 # Deploy neopuyo42Token
 
-[< Table of contents](../tokenizerDocumentation.md)  
+[< Table of contents](../documentation/tokenizerDocumentation.md)  
 [< ReadMe](../README.md)  
 
 ## step by step guide
